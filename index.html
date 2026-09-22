@@ -123,9 +123,10 @@
             transform: scale(0.95);
         }
 
+        /* Збільшений розмір крокодила */
         .character-img {
-            width: 260px;
-            height: 260px;
+            width: 320px;
+            height: 320px;
             object-fit: contain;
             filter: drop-shadow(0 10px 20px rgba(0,0,0,0.6));
         }
@@ -299,6 +300,7 @@
         </div>
     </header>
 
+    <!-- Вкладка 1: Тап -->
     <div class="tab-content active" id="tab-tap">
         <div class="character-wrapper" id="clickArea">
             <img src="1790090929041.png" alt="Крокодил" class="character-img">
@@ -315,6 +317,7 @@
         </div>
     </div>
 
+    <!-- Вкладка 2: Бусти -->
     <div class="tab-content" id="tab-boosts">
         <div class="section-title">Покращення</div>
         <div class="items-list">
@@ -335,6 +338,7 @@
         </div>
     </div>
 
+    <!-- Вкладка 3: Завдання -->
     <div class="tab-content" id="tab-tasks">
         <div class="section-title">Щоденні завдання</div>
         <div class="items-list">
@@ -355,6 +359,7 @@
         </div>
     </div>
 
+    <!-- Вкладка 4: Друзі -->
     <div class="tab-content" id="tab-friends">
         <div class="section-title">Реферальна система</div>
         <div class="items-list">
@@ -368,6 +373,7 @@
         </div>
     </div>
 
+    <!-- Навігація -->
     <nav>
         <button class="nav-item active" onclick="switchTab('tap', this)">
             <span class="nav-icon">⚡</span>
