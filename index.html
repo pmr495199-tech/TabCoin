@@ -309,7 +309,7 @@
         <div class="energy-section">
             <div class="energy-info">
                 <span class="energy-title">⚡ Енергія</span>
-                <span id="energyText">998 / 1000</span>
+                <span id="energyText">1000 / 1000</span>
             </div>
             <div class="energy-bar-container">
                 <div class="energy-bar-fill" id="energyFill"></div>
@@ -394,16 +394,49 @@
     </nav>
 
     <script>
-        let score = 764;
-        let energy = 998;
-        let maxEnergy = 1000;
-        let clickPower = 1;
-        let taskStarted = false;
+        // Завантаження збережених даних із пам'яті пристрою
+        let score = localStorage.getItem('tabcoin_score') ? parseInt(localStorage.getItem('tabcoin_score')) : 764;
+        let energy = localStorage.getItem('tabcoin_energy') ? parseInt(localStorage.getItem('tabcoin_energy')) : 1000;
+        let maxEnergy = localStorage.getItem('tabcoin_maxEnergy') ? parseInt(localStorage.getItem('tabcoin_maxEnergy')) : 1000;
+        let clickPower = localStorage.getItem('tabcoin_clickPower') ? parseInt(localStorage.getItem('tabcoin_clickPower')) : 1;
+        let taskStarted = localStorage.getItem('tabcoin_taskStarted') === 'true';
+        let telegramTaskDone = localStorage.getItem('tabcoin_tgDone') === 'true';
+        let refTaskDone = localStorage.getItem('tabcoin_refDone') === 'true';
 
         const scoreElement = document.getElementById('score');
         const energyText = document.getElementById('energyText');
         const energyFill = document.getElementById('energyFill');
         const clickArea = document.getElementById('clickArea');
+
+        // Відновлення стану інтерфейсу та кнопок при завантаженні
+        window.addEventListener('DOMContentLoaded', () => {
+            if (telegramTaskDone) {
+                const subBtn = document.getElementById('subBtn');
+                if (subBtn) {
+                    subBtn.textContent = 'Виконано';
+                    subBtn.disabled = true;
+                }
+            }
+            if (refTaskDone) {
+                const refBtn = document.getElementById('refBtn');
+                if (refBtn) {
+                    refBtn.textContent = 'Отримано';
+                    refBtn.disabled = true;
+                    document.getElementById('refProgress').textContent = 'Виконано: 10 000 / 10 000';
+                }
+            }
+            updateUI();
+        });
+
+        function saveGame() {
+            localStorage.setItem('tabcoin_score', score);
+            localStorage.setItem('tabcoin_energy', energy);
+            localStorage.setItem('tabcoin_maxEnergy', maxEnergy);
+            localStorage.setItem('tabcoin_clickPower', clickPower);
+            localStorage.setItem('tabcoin_taskStarted', taskStarted);
+            localStorage.setItem('tabcoin_tgDone', telegramTaskDone);
+            localStorage.setItem('tabcoin_refDone', refTaskDone);
+        }
 
         clickArea.addEventListener('click', (e) => {
             if (energy >= clickPower) {
@@ -412,6 +445,7 @@
 
                 updateUI();
                 showFloatingText(e);
+                saveGame();
             }
         });
 
@@ -419,6 +453,7 @@
             if (energy < maxEnergy) {
                 energy = Math.min(maxEnergy, energy + 3);
                 updateUI();
+                saveGame();
             }
         }, 1000);
 
@@ -471,6 +506,7 @@
                     alert('Максимум енергії збільшено!');
                 }
                 updateUI();
+                saveGame();
             } else {
                 alert('Недостатньо монет!');
             }
@@ -482,15 +518,18 @@
             btn.textContent = 'Перевірити';
             taskStarted = true;
             btn.setAttribute('onclick', 'checkTelegramTask()');
+            saveGame();
         }
 
         function checkTelegramTask() {
             if (taskStarted) {
                 score += 5000;
+                telegramTaskDone = true;
                 const btn = document.getElementById('subBtn');
                 btn.textContent = 'Виконано';
                 btn.disabled = true;
                 updateUI();
+                saveGame();
                 alert('Завдання виконано! Отримано +5000 монет.');
             }
         }
@@ -500,11 +539,13 @@
 
             if (friendReachedGoal) {
                 score += 10000;
+                refTaskDone = true;
                 const btn = document.getElementById('refBtn');
                 btn.textContent = 'Отримано';
                 btn.disabled = true;
                 document.getElementById('refProgress').textContent = 'Виконано: 10 000 / 10 000';
                 updateUI();
+                saveGame();
                 alert('Вітаю! Твій друг натапав 10 000 монет, ти отримав нагороду!');
             } else {
                 alert('Друг ще не натапав 10 000 монет. Почекай трохи!');
@@ -514,8 +555,6 @@
         function inviteFriend() {
             window.open('https://t.me/share/url?url=https://t.me/tabcon1_bot&text=Заходь у круту тапалку та заробляй монети!', '_blank');
         }
-
-        updateUI();
     </script>
 </body>
 </html>
