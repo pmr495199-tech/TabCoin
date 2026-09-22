@@ -46,7 +46,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.55);
+            background: rgba(0, 0, 0, 0.45);
             z-index: 0;
         }
 
@@ -112,7 +112,7 @@
             display: flex;
         }
 
-        /* Стилі для вкладки Тап та картинки крокодила */
+        /* Стилі для крокодила */
         .character-wrapper {
             position: relative;
             cursor: pointer;
@@ -301,21 +301,20 @@
         <div class="game-title">TabCoin Mining</div>
         <div class="balance-container">
             <div class="coin-icon">🪙</div>
-            <div class="balance-score" id="score">760</div>
+            <div class="balance-score" id="score">764</div>
         </div>
     </header>
 
     <!-- Вкладка 1: Тап (Головна) -->
     <div class="tab-content active" id="tab-tap">
         <div class="character-wrapper" id="clickArea">
-            <!-- Тут повернено твою картинку крокодила (заміни назву файлу на ту, під якою збережений твій крокодил) -->
-            <img src="1790090929041.png" alt="1790090929041.png" class="character-img">
+            <img src="1790090929041.png" alt="Крокодил" class="character-img">
         </div>
 
         <div class="energy-section">
             <div class="energy-info">
                 <span class="energy-title">⚡ Енергія</span>
-                <span id="energyText">990 / 1000</span>
+                <span id="energyText">998 / 1000</span>
             </div>
             <div class="energy-bar-container">
                 <div class="energy-bar-fill" id="energyFill"></div>
@@ -400,8 +399,8 @@
     </nav>
 
     <script>
-        let score = 760;
-        let energy = 990;
+        let score = 764;
+        let energy = 998;
         let maxEnergy = 1000;
         let clickPower = 1;
 
