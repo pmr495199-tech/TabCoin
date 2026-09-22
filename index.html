@@ -348,9 +348,7 @@
                     <h4>Підписатися на Telegram</h4>
                     <p>Нагорода: +5000 монет</p>
                 </div>
-                <a href="https://t.me/tabcoin_bot1" target="_blank" style="text-decoration: none;">
-                    <button class="item-btn" onclick="completeTask(this, 5000)">Виконати</button>
-                </a>
+                <button class="item-btn" id="subBtn" onclick="startTelegramTask()">Виконати</button>
             </div>
             <div class="item-card">
                 <div class="item-info">
@@ -479,19 +477,31 @@
             }
         }
 
-        function completeTask(btn, reward) {
-            score += reward;
-            btn.textContent = 'Виконано';
-            btn.disabled = true;
-            updateUI();
-            alert(`Завдання виконано! Отримано +${reward} монет.`);
+                let taskStarted = false;
+
+        function startTelegramTask() {
+            // Відкриваємо канал в новому вікні/вкладці
+            window.open('https://t.me/tabcoin_bot1', '_blank');
+            
+            const btn = document.getElementById('subBtn');
+            btn.textContent = 'Перевірити';
+            taskStarted = true;
+            
+            // Змінюємо дію кнопки на перевірку
+            btn.setAttribute('onclick', 'checkTelegramTask()');
         }
 
-        function inviteFriend() {
-            alert('Посилання для запрошення скопійовано в буфер обміну!');
+        function checkTelegramTask() {
+            if (taskStarted) {
+                score += 5000;
+                const btn = document.getElementById('subBtn');
+                btn.textContent = 'Виконано';
+                btn.disabled = true;
+                updateUI();
+                alert('Завдання виконано! Отримано +5000 монет.');
+            }
         }
 
-        updateUI();
     </script>
 </body>
 </html>
