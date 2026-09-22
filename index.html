@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Clicker Telegram Mini App</title>
+  <!-- Telegram Web App SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: var(--tg-theme-bg-color, #1a1a1a);
+      color: var(--tg-theme-text-color, #ffffff);
+      font-family: Arial, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    .score-container {
+      font-size: 2.5rem;
+      font-weight: bold;
+      margin-bottom: 30px;
+      color: #ffd700;
+    }
+
+    .click-btn {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      border: none;
+      background: linear-gradient(135deg, #ff7e5f, #feb47b);
+      box-shadow: 0 10px 25px rgba(255, 126, 95, 0.5);
+      font-size: 4rem;
+      cursor: pointer;
+      outline: none;
+      transition: transform 0.1s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .click-btn:active {
+      transform: scale(0.92);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Клікер Гра</h1>
+  <div class="score-container" id="score">0</div>
+  <button class="click-btn" id="clickerBtn">⚽</button>
+
+  <script>
+    // Ініціалізація Telegram WebApp
+    const tg = window.Telegram.WebApp;
+    tg.expand(); // Розгортаємо додаток на весь екран
+
+    let score = 0;
+    const scoreElement = document.getElementById('score');
+    const clickerBtn = document.getElementById('clickerBtn');
+
+    clickerBtn.addEventListener('click', () => {
+      score++;
+      scoreElement.innerText = score;
+
+      // Легка вібрація при кліку (працює на мобільних пристроях)
+      if (tg.HapticFeedback) {
+        tg.HapticFeedback.impactOccurred('light');
+      }
+    });
+  </script>
+</body>
+</html>
