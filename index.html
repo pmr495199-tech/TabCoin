@@ -500,24 +500,7 @@
                 updateUI();
                 alert('Завдання виконано! Отримано +5000 монет.');
             }
-                     let referralClicks = 0; // Тут у майбутньому можна підв'язати реальні дані з бази бота
-
-        function checkReferralProgress() {
-            // Для тесту поки що імітуємо, що друг досяг цілі (або підтягуємо з твоїх даних)
-            let friendReachedGoal = true; // Зміни на false, якщо друг ще не натапав
-
-            if (friendReachedGoal) {
-                score += 10000;
-                const btn = document.getElementById('refBtn');
-                btn.textContent = 'Отримано';
-                btn.disabled = true;
-                document.getElementById('refProgress').textContent = 'Виконано: 10 000 / 10 000';
-                updateUI();
-                alert('Вітаю! Твій друг натапав 10 000 монет, ти отримав нагороду!');
-            } else {
-                alert('Друг ще не натапав 10 000 монет. Потрібно ще трохи почекати!');
-            }
-        }
+                     
 
     </script>
 </body>
