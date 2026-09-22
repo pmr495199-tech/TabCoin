@@ -37,12 +37,12 @@
 
     /* Верхня панель монети */
     .header {
-      padding: 20px 0 10px 0;
+      padding: 15px 0 5px 0;
       text-align: center;
     }
 
     .title {
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: 700;
       letter-spacing: 2px;
       color: var(--text-gray);
@@ -54,11 +54,11 @@
       align-items: center;
       justify-content: center;
       gap: 10px;
-      margin-top: 10px;
+      margin-top: 5px;
     }
 
     .balance {
-      font-size: 2.8rem;
+      font-size: 2.5rem;
       font-weight: 900;
       color: var(--text-white);
       text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
@@ -69,8 +69,6 @@
       display: none;
       flex: 1;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
       padding: 20px;
       overflow-y: auto;
     }
@@ -79,13 +77,10 @@
       display: flex;
     }
 
-    /* Головна зона для кліку (Тап) */
-    .coin-wrapper {
-      display: flex;
-      justify-content: center;
+    /* Головна зона для кліку (Тап) з крокодилом */
+    #tab-tap.active {
       align-items: center;
-      width: 100%;
-      height: 100%;
+      justify-content: center;
     }
 
     .coin-btn {
@@ -100,7 +95,6 @@
       cursor: pointer;
       transition: transform 0.08s ease-out;
       outline: none;
-      margin: 0 auto;
     }
 
     .coin-btn:active {
@@ -252,18 +246,16 @@
   <div class="header">
     <div class="title">TabCoin Mining</div>
     <div class="balance-container">
-      <span style="font-size: 2.5rem;">🪙</span>
+      <span style="font-size: 2.2rem;">🪙</span>
       <span class="balance" id="score">0</span>
     </div>
   </div>
 
   <!-- ВКЛАДКА 1: ТАП (ГРА) -->
   <div class="tab-content active" id="tab-tap">
-    <div class="coin-wrapper">
-      <button class="coin-btn" id="coinBtn">
-        <img src="1790090929041.png" alt="Character" style="width: 300px; height: 300px; object-fit: cover; border-radius: 50%; pointer-events: none; display: block;">
-      </button>
-    </div>
+    <button class="coin-btn" id="coinBtn">
+      <img src="1790090929041.png" alt="Character" style="width: 280px; height: 280px; object-fit: cover; border-radius: 50%; pointer-events: none; display: block;">
+    </button>
   </div>
 
   <!-- ВКЛАДКА 2: БУСТИ -->
@@ -466,7 +458,6 @@
     });
 
     // Купівля Ліміту енергії
-    document.getElementById('btnEnergyLimit').EventListener?.('click', () => {}); // safe guard
     document.getElementById('btnEnergyLimit').addEventListener('click', () => {
       if (score >= energyLimitCost) {
         score -= energyLimitCost;
