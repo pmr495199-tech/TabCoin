@@ -38,7 +38,6 @@
             position: relative;
         }
 
-        /* Темний фільтр для читабельності інтерфейсу */
         body::before {
             content: '';
             position: absolute;
@@ -96,7 +95,6 @@
             letter-spacing: 1px;
         }
 
-        /* Контент вкладок */
         .tab-content {
             flex: 1;
             display: none;
@@ -112,7 +110,6 @@
             display: flex;
         }
 
-        /* Стилі для крокодила */
         .character-wrapper {
             position: relative;
             cursor: pointer;
@@ -174,7 +171,6 @@
             transition: width 0.2s ease;
         }
 
-        /* Списки для Бустів, Завдань і Друзів */
         .section-title {
             font-size: 20px;
             font-weight: 700;
@@ -240,7 +236,6 @@
             cursor: not-allowed;
         }
 
-        /* Нижня навігація */
         nav {
             display: flex;
             justify-content: space-around;
@@ -272,7 +267,6 @@
             font-size: 20px;
         }
 
-        /* Анімація кліків */
         .click-pop {
             position: absolute;
             font-weight: bold;
@@ -305,7 +299,6 @@
         </div>
     </header>
 
-    <!-- Вкладка 1: Тап (Головна) -->
     <div class="tab-content active" id="tab-tap">
         <div class="character-wrapper" id="clickArea">
             <img src="1790090929041.png" alt="Крокодил" class="character-img">
@@ -322,7 +315,6 @@
         </div>
     </div>
 
-    <!-- Вкладка 2: Бусти -->
     <div class="tab-content" id="tab-boosts">
         <div class="section-title">Покращення</div>
         <div class="items-list">
@@ -343,7 +335,6 @@
         </div>
     </div>
 
-    <!-- Вкладка 3: Завдання -->
     <div class="tab-content" id="tab-tasks">
         <div class="section-title">Щоденні завдання</div>
         <div class="items-list">
@@ -364,7 +355,6 @@
         </div>
     </div>
 
-    <!-- Вкладка 4: Друзі -->
     <div class="tab-content" id="tab-friends">
         <div class="section-title">Реферальна система</div>
         <div class="items-list">
@@ -378,7 +368,6 @@
         </div>
     </div>
 
-    <!-- Нижня панель навігації -->
     <nav>
         <button class="nav-item active" onclick="switchTab('tap', this)">
             <span class="nav-icon">⚡</span>
@@ -409,7 +398,6 @@
         const energyFill = document.getElementById('energyFill');
         const clickArea = document.getElementById('clickArea');
 
-        // Логіка кліків
         clickArea.addEventListener('click', (e) => {
             if (energy >= clickPower) {
                 score += clickPower;
@@ -420,7 +408,6 @@
             }
         });
 
-        // Відновлення енергії
         setInterval(() => {
             if (energy < maxEnergy) {
                 energy = Math.min(maxEnergy, energy + 3);
@@ -453,7 +440,6 @@
             }, 800);
         }
 
-        // Перемикання вкладок
         function switchTab(tabId, element) {
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
@@ -466,7 +452,6 @@
             element.classList.add('active');
         }
 
-        // Функції для магазину бустів
         function buyBoost(type, cost) {
             if (score >= cost) {
                 score -= cost;
@@ -484,7 +469,6 @@
             }
         }
 
-        // Виконання завдань
         function completeTask(btn, reward) {
             score += reward;
             btn.textContent = 'Виконано';
@@ -493,7 +477,6 @@
             alert(`Завдання виконано! Отримано +${reward} монет.`);
         }
 
-        // Запрошення друзів
         function inviteFriend() {
             alert('Посилання для запрошення скопійовано в буфер обміну!');
         }
