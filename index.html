@@ -112,7 +112,7 @@
             display: flex;
         }
 
-        /* Стилі для вкладки Тап */
+        /* Стилі для вкладки Тап та картинки крокодила */
         .character-wrapper {
             position: relative;
             cursor: pointer;
@@ -124,6 +124,13 @@
 
         .character-wrapper:active {
             transform: scale(0.95);
+        }
+
+        .character-img {
+            width: 260px;
+            height: 260px;
+            object-fit: contain;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.6));
         }
 
         .energy-section {
@@ -301,7 +308,8 @@
     <!-- Вкладка 1: Тап (Головна) -->
     <div class="tab-content active" id="tab-tap">
         <div class="character-wrapper" id="clickArea">
-            <div style="font-size: 150px; text-align: center; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));">🐊</div>
+            <!-- Тут повернено твою картинку крокодила (заміни назву файлу на ту, під якою збережений твій крокодил) -->
+            <img src="1790096277648.png" alt="Крокодил" class="character-img">
         </div>
 
         <div class="energy-section">
@@ -495,4 +503,3 @@
     </script>
 </body>
 </html>
-                            
