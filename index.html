@@ -80,40 +80,31 @@
     }
 
     /* Головна зона для кліку (Тап) */
-    .click-area {
+    .coin-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
       width: 100%;
       height: 100%;
-      position: relative;
-    }
-    .coin-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
     }
 
     .coin-btn {
-    width: 280px;
-    height: 280px;
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: transform 0.08s ease-out;
-    outline: none;
-    margin: 0 auto;
+      width: 280px;
+      height: 280px;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.08s ease-out;
+      outline: none;
+      margin: 0 auto;
     }
 
     .coin-btn:active {
       transform: scale(0.94);
-    }
-
-    .coin-inner-symbol {
-      font-size: 6rem;
-      filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));
     }
 
     /* Вилітаючий текст +1 */
@@ -267,11 +258,13 @@
   </div>
 
   <!-- ВКЛАДКА 1: ТАП (ГРА) -->
-  <div style="position: relative; width: 100%; height: 360px; display: flex; justify-content: center; align-items: center;">
-  <button class="coin-btn" id="coinBtn" style="background: transparent; border: none; outline: none; cursor: pointer; padding: 0; position: relative; margin-left: 0;">
-    <img src="1790090929041.png" alt="Character" style="width: 320px; height: 320px; object-fit: cover; border-radius: 42%; pointer-events: none; display: block;">
-  </button>
-</div>
+  <div class="tab-content active" id="tab-tap">
+    <div class="coin-wrapper">
+      <button class="coin-btn" id="coinBtn">
+        <img src="1790090929041.png" alt="Character" style="width: 300px; height: 300px; object-fit: cover; border-radius: 50%; pointer-events: none; display: block;">
+      </button>
+    </div>
+  </div>
 
   <!-- ВКЛАДКА 2: БУСТИ -->
   <div class="tab-content" id="tab-boosts">
@@ -473,6 +466,7 @@
     });
 
     // Купівля Ліміту енергії
+    document.getElementById('btnEnergyLimit').EventListener?.('click', () => {}); // safe guard
     document.getElementById('btnEnergyLimit').addEventListener('click', () => {
       if (score >= energyLimitCost) {
         score -= energyLimitCost;
