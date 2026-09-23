@@ -742,12 +742,10 @@
             }
         }
 
-        // Функція для покупки через Telegram Stars
         function buyWithStars(gemsAmount, starsPrice) {
             if (window.Telegram && window.Telegram.WebApp) {
                 const tg = window.Telegram.WebApp;
                 
-                // Звернення до твого майбутнього бекенду за інвойсом
                 fetch(`https://твій-сервер.com/create-invoice?gems=${gemsAmount}&stars=${starsPrice}`)
                     .then(response => response.json())
                     .then(data => {
@@ -766,7 +764,6 @@
                     })
                     .catch(err => {
                         console.log('Помилка сервера:', err);
-                        // Тимчасова симуляція для тестування без сервера:
                         if (confirm(`[Тест] Симулювати успішну покупку ${gemsAmount} 💎 за ${starsPrice} ⭐?`)) {
                             gems += gemsAmount;
                             updateVisuals();
