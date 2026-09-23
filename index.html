@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>TabCoin</title>
-    <!-- Підключаємо офіційний Telegram WebApp SDK для роботи зі Зірками -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
             --bg-dark: #0f172a;
@@ -229,7 +227,7 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
-            max-height: 55vh;
+            max-height: 60vh;
             overflow-y: auto;
             padding-right: 4px;
         }
@@ -308,12 +306,12 @@
             display: none;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             width: 100%;
             max-width: 340px;
             background: var(--panel-bg);
             border: 1px solid var(--border-color);
-            padding: 12px;
+            padding: 15px;
             border-radius: 16px;
             backdrop-filter: blur(10px);
             text-align: center;
@@ -325,8 +323,8 @@
 
         .wheel-wrapper {
             position: relative;
-            width: 210px;
-            height: 210px;
+            width: 240px;
+            height: 240px;
         }
 
         .wheel {
@@ -359,14 +357,14 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 38px;
-            height: 38px;
+            width: 42px;
+            height: 42px;
             background: var(--accent-gold);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 18px;
             box-shadow: 0 0 10px rgba(0,0,0,0.5);
             z-index: 5;
         }
@@ -376,7 +374,7 @@
             justify-content: space-around;
             background: var(--panel-bg);
             border-top: 1px solid var(--border-color);
-            padding: 8px 0;
+            padding: 10px 0;
             backdrop-filter: blur(15px);
         }
 
@@ -384,11 +382,11 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 2px;
+            gap: 3px;
             background: none;
             border: none;
             color: var(--text-secondary);
-            font-size: 9px;
+            font-size: 10px;
             font-weight: 500;
             cursor: pointer;
             transition: color 0.2s;
@@ -399,7 +397,7 @@
         }
 
         .nav-icon {
-            font-size: 15px;
+            font-size: 16px;
         }
 
         .click-pop {
@@ -520,21 +518,21 @@
         </div>
 
         <div class="roulette-container active" id="roulette-coin">
-            <p style="font-size: 11px; color: var(--text-secondary);">Ціна прокрутки: 7 000 🪙</p>
+            <p style="font-size: 12px; color: var(--text-secondary);">Ціна прокрутки: 7 000 🪙</p>
             <div class="wheel-wrapper">
                 <div class="wheel-pointer"></div>
                 <div class="wheel" id="wheelCoin"></div>
             </div>
-            <button class="item-btn" id="spinCoinBtn" onclick="spinCoinWheel()" style="width: 100%; padding: 8px; font-size: 13px;">Крутити (7 000 🪙)</button>
+            <button class="item-btn" id="spinCoinBtn" onclick="spinCoinWheel()" style="width: 100%; padding: 10px; font-size: 14px;">Крутити (7 000 🪙)</button>
         </div>
 
         <div class="roulette-container" id="roulette-gem">
-            <p style="font-size: 11px; color: var(--text-secondary);">Ціна прокрутки: 15 💎</p>
+            <p style="font-size: 12px; color: var(--text-secondary);">Ціна прокрутки: 15 💎</p>
             <div class="wheel-wrapper">
                 <div class="wheel-pointer"></div>
                 <div class="wheel" id="wheelGem" style="border-color: var(--accent-gem);"></div>
             </div>
-            <button class="item-btn" id="spinGemBtn" onclick="spinGemWheel()" style="width: 100%; padding: 8px; font-size: 13px; background: var(--accent-gem); color: #0369a1;">Крутити (15 💎)</button>
+            <button class="item-btn" id="spinGemBtn" onclick="spinGemWheel()" style="width: 100%; padding: 10px; font-size: 14px; background: var(--accent-gem); color: #0369a1;">Крутити (15 💎)</button>
         </div>
     </div>
 
@@ -547,27 +545,6 @@
                     <p>500 000 🪙 ➔ 20 💎</p>
                 </div>
                 <button class="item-btn" onclick="exchangeCoinsToGems()">Обміняти</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Вкладка Магазин зірок ⭐ -->
-    <div class="tab-content" id="tab-shop">
-        <div class="section-title">Магазин зірок ⭐</div>
-        <div class="items-list">
-            <div class="item-card">
-                <div class="item-info">
-                    <h4>Мішок кристалів</h4>
-                    <p>+100 💎 на баланс</p>
-                </div>
-                <button class="item-btn" onclick="buyWithStars(100, 50)">50 ⭐</button>
-            </div>
-            <div class="item-card">
-                <div class="item-info">
-                    <h4>Скеля кристалів</h4>
-                    <p>+500 💎 на баланс</p>
-                </div>
-                <button class="item-btn" onclick="buyWithStars(500, 200)">200 ⭐</button>
             </div>
         </div>
     </div>
@@ -596,10 +573,6 @@
         <button class="nav-item" onclick="switchTab('exchange', this)">
             <span class="nav-icon">🔄</span>
             <span>Обміни</span>
-        </button>
-        <button class="nav-item" onclick="switchTab('shop', this)">
-            <span class="nav-icon">⭐</span>
-            <span>Магазин</span>
         </button>
     </nav>
 
@@ -739,42 +712,6 @@
                 alert(`Успішний обмін! Отримано +${reward} 💎`);
             } else {
                 alert('Недостатньо монет! Потрібно 500 000 🪙');
-            }
-        }
-
-        // Пряма оплата через зірки Telegram без стороннього сервера
-        function buyWithStars(gemsAmount, starsPrice) {
-            if (window.Telegram && window.Telegram.WebApp) {
-                const tg = window.Telegram.WebApp;
-                
-                // Якщо метод openInvoiceInvoice доступний через посилання або тестовий режим:
-                // Для робочих інвойсів без бекенду використовується invoice_link створений через BotFather / Telegram API.
-                // Оскільки створюємопрямий тест/симуляцію чи виклик інвойсу:
-                
-                if (typeof tg.openInvoice === 'function') {
-                    // Якщо у вас немає посилання на інвойс від бота, робимо надійний запасний варіант з підтвердженням або прямим викликом
-                    // Але щоб уникнути помилки «Сервер недоступний», одразу зараховуємо при виклику тестового вікна або налаштовуємо діалог:
-                    if (confirm(`Придбати +${gemsAmount} 💎 за ${starsPrice} ⭐?`)) {
-                        gems += gemsAmount;
-                        updateVisuals();
-                        saveGame();
-                        tg.showAlert(`Успішно! Ви придбали +${gemsAmount} 💎 за ${starsPrice} ⭐!`);
-                    }
-                } else {
-                    // Запасний варіант для Telegram WebApp
-                    gems += gemsAmount;
-                    updateVisuals();
-                    saveGame();
-                    alert(`Успішно! Ви придбали +${gemsAmount} 💎 за ${starsPrice} ⭐!`);
-                }
-            } else {
-                // Якщо запуск у звичайному браузері для перевірки
-                if (confirm(`[Браузер] Симулювати покупку +${gemsAmount} 💎 за ${starsPrice} ⭐?`)) {
-                    gems += gemsAmount;
-                    updateVisuals();
-                    saveGame();
-                    alert(`Успішно зараховано +${gemsAmount} 💎!`);
-                }
             }
         }
 
