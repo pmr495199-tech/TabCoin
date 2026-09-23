@@ -340,14 +340,19 @@
             left: 50%;
             transform-origin: 0% 100%;
             display: flex;
-            align-items: flex-end;
+            align-items: flex-start;
             justify-content: center;
-            padding-bottom: 15px;
-            padding-left: 5px;
+            padding-top: 15px;
+            pointer-events: none;
+        }
+
+        .wheel-sector span {
+            display: inline-block;
             font-size: 11px;
             font-weight: bold;
             color: white;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.9);
+            transform: rotate(90deg);
         }
 
         .wheel-pointer {
@@ -443,6 +448,7 @@
         </div>
     </header>
 
+    <!-- Вкладка 1: Тап -->
     <div class="tab-content active" id="tab-tap">
         <div class="character-wrapper" id="clickArea">
             <img src="1790090929041.png" alt="Крокодил" class="character-img">
@@ -459,6 +465,7 @@
         </div>
     </div>
 
+    <!-- Вкладка 2: Бусти -->
     <div class="tab-content" id="tab-boosts">
         <div class="section-title">Покращення</div>
         <div class="items-list">
@@ -479,6 +486,7 @@
         </div>
     </div>
 
+    <!-- Вкладка 3: Завдання -->
     <div class="tab-content" id="tab-tasks">
         <div class="section-title">Щоденні завдання</div>
         <div class="items-list">
@@ -499,6 +507,7 @@
         </div>
     </div>
 
+    <!-- Вкладка 4: Друзі -->
     <div class="tab-content" id="tab-friends">
         <div class="section-title">Реферальна система</div>
         <div class="items-list">
@@ -512,14 +521,17 @@
         </div>
     </div>
 
+    <!-- Вкладка 5: Рулетки (Дві різні) -->
     <div class="tab-content" id="tab-roulette">
         <div class="section-title">Колесо Фортуни</div>
         
+        <!-- Перемикач рулеток -->
         <div class="roulette-switcher">
             <button class="roulette-switch-btn active" onclick="switchRoulette('coin', this)">🪙 Монетна</button>
             <button class="roulette-switch-btn" onclick="switchRoulette('gem', this)">💎 Кришталева</button>
         </div>
 
+        <!-- Монетна рулетка -->
         <div class="roulette-container active" id="roulette-coin">
             <p style="font-size: 12px; color: var(--text-secondary);">Ціна прокрутки: 7 000 🪙</p>
             <div class="wheel-wrapper">
@@ -531,6 +543,7 @@
             <button class="item-btn" id="spinCoinBtn" onclick="spinCoinWheel()" style="width: 100%; padding: 10px; font-size: 14px;">Крутити (7 000 🪙)</button>
         </div>
 
+        <!-- Кришталева рулетка -->
         <div class="roulette-container" id="roulette-gem">
             <p style="font-size: 12px; color: var(--text-secondary);">Ціна прокрутки: 15 💎</p>
             <div class="wheel-wrapper">
@@ -543,6 +556,7 @@
         </div>
     </div>
 
+    <!-- Навігація -->
     <nav>
         <button class="nav-item active" onclick="switchTab('tap', this)">
             <span class="nav-icon">⚡</span>
@@ -732,9 +746,26 @@
             window.open('https://t.me/share/url?url=https://t.me/tabcoin1_bot&text=Заходь у круту тапалку!', '_blank');
         }
 
-        // Рендеринг секторів рулеток із текстом та емодзі
-        const coinPrizes = [5000, 7000, 10000, 15000, 20000, 25000, 30000];
-        const gemPrizes = [5, 7, 10, 15, 20, 25, 30];
+        // Налаштування призових секторів і шансів (у відсотках)
+        const coinPrizes = [
+            { value: 5000, chance: 60 },
+            { value: 7000, chance: 60 },
+            { value: 10000, chance: 60 },
+            { value: 15000, chance: 50 },
+            { value: 20000, chance: 12 },
+            { value: 25000, chance: 5 },
+            { value: 30000, chance: 3 }
+        ];
+
+        const gemPrizes = [
+            { value: 5, chance: 60 },
+            { value: 7, chance: 60 },
+            { value: 10, chance: 60 },
+            { value: 15, chance: 50 },
+            { value: 20, chance: 12 },
+            { value: 25, chance: 5 },
+            { value: 30, chance: 3 }
+        ];
 
         function createWheelSectors(wheelId, prizes, symbol) {
             const wheel = document.getElementById(wheelId);
@@ -742,36 +773,39 @@
             const angleStep = 360 / total;
 
             let gradientString = 'conic-gradient(';
-            prizes.forEach((prize, index) => {
+            prizes.forEach((prizeObj, index) => {
                 const startAngle = index * angleStep;
                 const endAngle = (index + 1) * angleStep;
                 const color = index % 2 === 0 ? '#1e293b' : '#334155';
                 gradientString += `${color} ${startAngle}deg ${endAngle}deg${index === total - 1 ? '' : ','}`;
 
-                // Створення текстового сектору
                 const sector = document.createElement('div');
                 sector.className = 'wheel-sector';
                 sector.style.transform = `rotate(${startAngle + angleStep / 2}deg)`;
-                sector.innerHTML = `<span>${prize} ${symbol}</span>`;
+                sector.innerHTML = `<span>${prizeObj.value} ${symbol}</span>`;
                 wheel.appendChild(sector);
             });
             gradientString += ')';
             wheel.style.background = gradientString;
         }
 
-        // Ініціалізація коліс при завантаженні
         window.addEventListener('DOMContentLoaded', () => {
             createWheelSectors('wheelCoin', coinPrizes, '🪙');
             createWheelSectors('wheelGem', gemPrizes, '💎');
         });
 
-        function getRandomIndexWithLowChanceForMax(prizesLength) {
-            const rand = Math.random() * 100;
-            if (rand < 3) {
-                return prizesLength - 1; // 3% шанс на найкращий приз
-            } else {
-                return Math.floor(Math.random() * (prizesLength - 1));
+        // Вибір призу на основі заданих шансів (ваг)
+        function getWeightedRandomIndex(prizes) {
+            const totalWeight = prizes.reduce((sum, item) => sum + item.chance, 0);
+            let randomNum = Math.random() * totalWeight;
+            
+            for (let i = 0; i < prizes.length; i++) {
+                if (randomNum < prizes[i].chance) {
+                    return i;
+                }
+                randomNum -= prizes[i].chance;
             }
+            return 0;
         }
 
         let coinRotation = 0;
@@ -789,7 +823,7 @@
             const spinBtn = document.getElementById('spinCoinBtn');
             spinBtn.disabled = true;
 
-            const prizeIndex = getRandomIndexWithLowChanceForMax(coinPrizes.length);
+            const prizeIndex = getWeightedRandomIndex(coinPrizes);
             const degreesPerItem = 360 / coinPrizes.length;
             const extraSpins = 5 * 360;
             const targetRotation = coinRotation + extraSpins + (360 - (prizeIndex * degreesPerItem + degreesPerItem / 2));
@@ -798,7 +832,7 @@
             document.getElementById('wheelCoin').style.transform = `rotate(${coinRotation}deg)`;
 
             setTimeout(() => {
-                const won = coinPrizes[prizeIndex];
+                const won = coinPrizes[prizeIndex].value;
                 score += won;
                 alert(`Вітаємо! Ви виграли ${won} монет 🪙!`);
                 updateUI();
@@ -822,7 +856,7 @@
             const spinBtn = document.getElementById('spinGemBtn');
             spinBtn.disabled = true;
 
-            const prizeIndex = getRandomIndexWithLowChanceForMax(gemPrizes.length);
+            const prizeIndex = getWeightedRandomIndex(gemPrizes);
             const degreesPerItem = 360 / gemPrizes.length;
             const extraSpins = 5 * 360;
             const targetRotation = gemRotation + extraSpins + (360 - (prizeIndex * degreesPerItem + degreesPerItem / 2));
@@ -831,7 +865,7 @@
             document.getElementById('wheelGem').style.transform = `rotate(${gemRotation}deg)`;
 
             setTimeout(() => {
-                const won = gemPrizes[prizeIndex];
+                const won = gemPrizes[prizeIndex].value;
                 gems += won;
                 alert(`Вітаємо! Ви виграли ${won} кристалів 💎!`);
                 updateUI();
