@@ -576,13 +576,15 @@
         let telegramTaskDone = localStorage.getItem('tabcoin_tgDone') === 'true';
         let refTaskDone = localStorage.getItem('tabcoin_refDone') === 'true';
 
+        // Енергія, яка тратиться за один клік (фіксовано 5)
+        const energyCostPerClick = 5;
+
         // Розрахунок офлайн енергії при завантаженні гри
         let lastTime = Number(localStorage.getItem('tabcoin_lastTime')) || Date.now();
         let currentTime = Date.now();
         let elapsedSeconds = Math.floor((currentTime - lastTime) / 1000);
 
         if (elapsedSeconds > 0 && energy < maxEnergy) {
-            // Відновлюємо по 3 енергії за секунду
             let restoredEnergy = elapsedSeconds * 3;
             energy = Math.min(maxEnergy, energy + restoredEnergy);
         }
@@ -648,7 +650,7 @@
         }
 
         updateVisuals();
-        saveGame(); // Зберігаємо актуальний час і відновлену енергію одразу при старті
+        saveGame();
 
         if (telegramTaskDone) {
             const subBtn = document.getElementById('subBtn');
@@ -670,9 +672,10 @@
         clickArea.addEventListener('touchstart', (e) => {
             e.preventDefault();
             for (let i = 0; i < e.changedTouches.length; i++) {
-                if (energy >= clickPower) {
+                // Перевіряємо чи вистачає енергії (5 одиниць)
+                if (energy >= energyCostPerClick) {
                     score += clickPower;
-                    energy -= clickPower;
+                    energy -= energyCostPerClick;
                     let touch = e.changedTouches[i];
                     showFloatingTextAt(touch.clientX, touch.clientY);
                 }
@@ -681,7 +684,6 @@
             saveGame();
         }, { passive: false });
 
-        // Онлайн відновлення енергії (кожну секунду)
         setInterval(() => {
             if (energy < maxEnergy) {
                 energy = Math.min(maxEnergy, energy + 3);
@@ -690,7 +692,6 @@
             }
         }, 1000);
 
-        // Оновлення часу під час закриття/згортання сторінки
         window.addEventListener('beforeunload', () => {
             saveGame();
         });
