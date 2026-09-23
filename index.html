@@ -121,6 +121,15 @@
             letter-spacing: 0.5px;
         }
 
+        .level-badge {
+            text-align: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--accent-gold);
+            margin-top: 5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
         .tab-content {
             flex: 1;
             display: none;
@@ -327,11 +336,10 @@
             box-shadow: 0 0 15px var(--accent-gold-glow);
         }
 
-        /* SVG Сектори всередині колеса для ідеального позиціонування */
         .wheel svg {
             width: 100%;
             height: 100%;
-            transform: rotate(-90deg); /* Початок від верхньої стрілки */
+            transform: rotate(-90deg);
         }
 
         .wheel-pointer {
@@ -426,11 +434,12 @@
                 <div class="balance-score" id="gems">10</div>
             </div>
         </div>
+        <div class="level-badge" id="levelBadge">Рівень 1</div>
     </header>
 
     <div class="tab-content active" id="tab-tap">
         <div class="character-wrapper" id="clickArea">
-            <img src="1790090929041.png" alt="Крокодил" class="character-img">
+            <img src="1790090929041.png" alt="Крокодил" class="character-img" id="characterImg">
         </div>
 
         <div class="energy-section">
@@ -557,6 +566,7 @@
         let energy = Number(localStorage.getItem('tabcoin_energy')) || 1000;
         let maxEnergy = Number(localStorage.getItem('tabcoin_maxEnergy')) || 1000;
         let clickPower = Number(localStorage.getItem('tabcoin_clickPower')) || 1;
+        let level = Number(localStorage.getItem('tabcoin_level')) || 1;
         let taskStarted = localStorage.getItem('tabcoin_taskStarted') === 'true';
         let telegramTaskDone = localStorage.getItem('tabcoin_tgDone') === 'true';
         let refTaskDone = localStorage.getItem('tabcoin_refDone') === 'true';
@@ -566,6 +576,8 @@
         const energyText = document.getElementById('energyText');
         const energyFill = document.getElementById('energyFill');
         const clickArea = document.getElementById('clickArea');
+        const levelBadge = document.getElementById('levelBadge');
+        const characterImg = document.getElementById('characterImg');
 
         function saveGame() {
             localStorage.setItem('tabcoin_score', score);
@@ -573,15 +585,36 @@
             localStorage.setItem('tabcoin_energy', energy);
             localStorage.setItem('tabcoin_maxEnergy', maxEnergy);
             localStorage.setItem('tabcoin_clickPower', clickPower);
+            localStorage.setItem('tabcoin_level', level);
             localStorage.setItem('tabcoin_taskStarted', taskStarted);
             localStorage.setItem('tabcoin_tgDone', telegramTaskDone);
             localStorage.setItem('tabcoin_refDone', refTaskDone);
         }
 
-        scoreElement.textContent = score;
-        gemsElement.textContent = gems;
-        energyText.textContent = `${energy} / ${maxEnergy}`;
-        energyFill.style.width = `${(energy / maxEnergy) * 100}%`;
+        function checkLevelProgression() {
+            if (score >= 70000 && level < 2) {
+                level = 2;
+                alert('🎉 Вітаємо! Ви досягли 70 000 монет та перейшли на 2-й рівень! Крокодил змінив одяг!');
+            }
+            updateVisuals();
+        }
+
+        function updateVisuals() {
+            scoreElement.textContent = score;
+            gemsElement.textContent = gems;
+            energyText.textContent = `${energy} / ${maxEnergy}`;
+            energyFill.style.width = `${(energy / maxEnergy) * 100}%`;
+            
+            if (level >= 2) {
+                levelBadge.textContent = 'Рівень 2 👑';
+                characterImg.src = '1790159498394.png';
+            } else {
+                levelBadge.textContent = 'Рівень 1';
+                characterImg.src = '1790090929041.png';
+            }
+        }
+
+        updateVisuals();
 
         if (telegramTaskDone) {
             const subBtn = document.getElementById('subBtn');
@@ -610,24 +643,17 @@
                     showFloatingTextAt(touch.clientX, touch.clientY);
                 }
             }
-            updateUI();
+            checkLevelProgression();
             saveGame();
         }, { passive: false });
 
         setInterval(() => {
             if (energy < maxEnergy) {
                 energy = Math.min(maxEnergy, energy + 3);
-                updateUI();
+                updateVisuals();
                 saveGame();
             }
         }, 1000);
-
-        function updateUI() {
-            scoreElement.textContent = score;
-            gemsElement.textContent = gems;
-            energyText.textContent = `${energy} / ${maxEnergy}`;
-            energyFill.style.width = `${(energy / maxEnergy) * 100}%`;
-        }
 
         function showFloatingTextAt(clientX, clientY) {
             const rect = clickArea.getBoundingClientRect();
@@ -665,7 +691,7 @@
                     energy = maxEnergy;
                     alert('Максимум енергії збільшено!');
                 }
-                updateUI();
+                checkLevelProgression();
                 saveGame();
             } else {
                 alert('Недостатньо монет!');
@@ -689,7 +715,7 @@
                 const btn = document.getElementById('subBtn');
                 btn.textContent = 'Виконано';
                 btn.disabled = true;
-                updateUI();
+                checkLevelProgression();
                 saveGame();
                 alert('Завдання виконано! Отримано +5000 монет та +5 💎.');
             }
@@ -705,7 +731,7 @@
                 btn.textContent = 'Отримано';
                 btn.disabled = true;
                 document.getElementById('refProgress').textContent = 'Виконано: 10 000 / 10 000';
-                updateUI();
+                checkLevelProgression();
                 saveGame();
                 alert('Вітаю! Нагороду за друга отримано!');
             } else {
@@ -717,12 +743,11 @@
             window.open('https://t.me/share/url?url=https://t.me/tabcoin1_bot&text=Заходь у круту тапалку!', '_blank');
         }
 
-        // 7 секторів з вагами (шансами) та гарними емодзі
         const coinPrizes = [
-            { text: "👑 30k", value: 30000, chance: 3 },
-            { text: "🔥 25k", value: 25000, chance: 5 },
-            { text: "⭐ 20k", value: 20000, chance: 12 },
-            { text: "💰 15k", value: 15000, chance: 50 },
+            { text: "🪙 30k", value: 30000, chance: 3 },
+            { text: "🪙 25k", value: 25000, chance: 5 },
+            { text: "🪙 20k", value: 20000, chance: 12 },
+            { text: "🪙 15k", value: 15000, chance: 50 },
             { text: "🪙 10k", value: 10000, chance: 60 },
             { text: "🪙 7k", value: 7000, chance: 60 },
             { text: "🪙 5k", value: 5000, chance: 60 }
@@ -738,7 +763,6 @@
             { text: "💎 5", value: 5, chance: 60 }
         ];
 
-        // Побудова ідеального колеса через SVG всередині контейнера
         function buildWheelSVG(wheelId, prizes) {
             const wheelContainer = document.getElementById(wheelId);
             const total = prizes.length;
@@ -749,11 +773,8 @@
             prizes.forEach((prize, index) => {
                 const startAngle = index * angleStep;
                 const endAngle = (index + 1) * angleStep;
-                
-                // Кольори секторів що чергуються
                 const fillColor = index % 2 === 0 ? '#1e293b' : '#334155';
                 
-                // Математика малювання секторів SVG піц-чарту
                 const x1 = 50 + 50 * Math.cos(Math.PI * startAngle / 180);
                 const y1 = 50 + 50 * Math.sin(Math.PI * startAngle / 180);
                 const x2 = 50 + 50 * Math.cos(Math.PI * endAngle / 180);
@@ -764,9 +785,8 @@
 
                 svgHTML += `<path d="${pathData}" fill="${fillColor}" stroke="#0f172a" stroke-width="0.5"/>`;
 
-                // Розрахунок позиції тексту по центру сектора
                 const midAngle = startAngle + angleStep / 2;
-                const textRadius = 32; // Радіус розташування тексту від центру
+                const textRadius = 32;
                 const textX = 50 + textRadius * Math.cos(Math.PI * midAngle / 180);
                 const textY = 50 + textRadius * Math.sin(Math.PI * midAngle / 180);
 
@@ -802,7 +822,7 @@
             }
 
             score -= cost;
-            updateUI();
+            checkLevelProgression();
             saveGame();
 
             const spinBtn = document.getElementById('spinCoinBtn');
@@ -812,9 +832,8 @@
             const totalItems = coinPrizes.length;
             const angleStep = 360 / totalItems;
             
-            // Розрахунок кута зупинки точно під верхню стрілку
             const targetSectorCenter = prizeIndex * angleStep + angleStep / 2;
-            const extraSpins = 360 * 7; // 7 повних обертів
+            const extraSpins = 360 * 7;
             const currentMod = coinRotation % 360;
             const targetRotation = coinRotation + extraSpins + (360 - currentMod) + (360 - targetSectorCenter);
             
@@ -825,7 +844,7 @@
                 const won = coinPrizes[prizeIndex].value;
                 score += won;
                 alert(`Вітаємо! Ви виграли ${won} монет 🪙!`);
-                updateUI();
+                checkLevelProgression();
                 saveGame();
                 spinBtn.disabled = false;
             }, 4000);
@@ -840,7 +859,7 @@
             }
 
             gems -= cost;
-            updateUI();
+            updateVisuals();
             saveGame();
 
             const spinBtn = document.getElementById('spinGemBtn');
@@ -862,7 +881,7 @@
                 const won = gemPrizes[prizeIndex].value;
                 gems += won;
                 alert(`Вітаємо! Ви виграли ${won} кристалів 💎!`);
-                updateUI();
+                updateVisuals();
                 saveGame();
                 spinBtn.disabled = false;
             }, 4000);
