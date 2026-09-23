@@ -21,6 +21,7 @@
             padding: 0;
             user-select: none;
             -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -394,7 +395,6 @@
     </nav>
 
     <script>
-        // Завантаження збережених даних із пам'яті
         let score = Number(localStorage.getItem('tabcoin_score')) || 764;
         let energy = Number(localStorage.getItem('tabcoin_energy')) || 1000;
         let maxEnergy = Number(localStorage.getItem('tabcoin_maxEnergy')) || 1000;
@@ -408,7 +408,6 @@
         const energyFill = document.getElementById('energyFill');
         const clickArea = document.getElementById('clickArea');
 
-        // Функція збереження
         function saveGame() {
             localStorage.setItem('tabcoin_score', score);
             localStorage.setItem('tabcoin_energy', energy);
@@ -419,7 +418,6 @@
             localStorage.setItem('tabcoin_refDone', refTaskDone);
         }
 
-        // Одразу оновлюємо інтерфейс і стан кнопок при завантаженні скрипта
         scoreElement.textContent = score;
         energyText.textContent = `${energy} / ${maxEnergy}`;
         energyFill.style.width = `${(energy / maxEnergy) * 100}%`;
