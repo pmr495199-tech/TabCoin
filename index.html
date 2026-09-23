@@ -269,7 +269,6 @@
             cursor: not-allowed;
         }
 
-        /* Стилі для рулеток */
         .roulette-switcher {
             display: flex;
             gap: 8px;
@@ -327,7 +326,7 @@
             border-radius: 50%;
             border: 4px solid var(--accent-gold);
             position: relative;
-            transition: transform 3s cubic-bezier(0.15, 0.85, 0.15, 1);
+            transition: transform 3.5s cubic-bezier(0.15, 0.85, 0.15, 1);
             overflow: hidden;
             box-shadow: 0 0 15px var(--accent-gold-glow);
         }
@@ -452,7 +451,6 @@
         </div>
     </header>
 
-    <!-- Вкладка 1: Тап -->
     <div class="tab-content active" id="tab-tap">
         <div class="character-wrapper" id="clickArea">
             <img src="1790090929041.png" alt="Крокодил" class="character-img">
@@ -469,7 +467,6 @@
         </div>
     </div>
 
-    <!-- Вкладка 2: Бусти -->
     <div class="tab-content" id="tab-boosts">
         <div class="section-title">Покращення</div>
         <div class="items-list">
@@ -490,7 +487,6 @@
         </div>
     </div>
 
-    <!-- Вкладка 3: Завдання -->
     <div class="tab-content" id="tab-tasks">
         <div class="section-title">Щоденні завдання</div>
         <div class="items-list">
@@ -511,7 +507,6 @@
         </div>
     </div>
 
-    <!-- Вкладка 4: Друзі -->
     <div class="tab-content" id="tab-friends">
         <div class="section-title">Реферальна система</div>
         <div class="items-list">
@@ -525,17 +520,14 @@
         </div>
     </div>
 
-    <!-- Вкладка 5: Рулетки (Дві різні) -->
     <div class="tab-content" id="tab-roulette">
         <div class="section-title">Колесо Фортуни</div>
         
-        <!-- Перемикач рулеток -->
         <div class="roulette-switcher">
             <button class="roulette-switch-btn active" onclick="switchRoulette('coin', this)">🪙 Монетна</button>
             <button class="roulette-switch-btn" onclick="switchRoulette('gem', this)">💎 Кришталева</button>
         </div>
 
-        <!-- Монетна рулетка -->
         <div class="roulette-container active" id="roulette-coin">
             <p style="font-size: 12px; color: var(--text-secondary);">Ціна прокрутки: 7 000 🪙</p>
             <div class="wheel-wrapper">
@@ -547,7 +539,6 @@
             <button class="item-btn" id="spinCoinBtn" onclick="spinCoinWheel()" style="width: 100%; padding: 10px; font-size: 14px;">Крутити (7 000 🪙)</button>
         </div>
 
-        <!-- Кришталева рулетка -->
         <div class="roulette-container" id="roulette-gem">
             <p style="font-size: 12px; color: var(--text-secondary);">Ціна прокрутки: 15 💎</p>
             <div class="wheel-wrapper">
@@ -560,7 +551,6 @@
         </div>
     </div>
 
-    <!-- Навігація -->
     <nav>
         <button class="nav-item active" onclick="switchTab('tap', this)">
             <span class="nav-icon">⚡</span>
@@ -750,25 +740,26 @@
             window.open('https://t.me/share/url?url=https://t.me/tabcoin1_bot&text=Заходь у круту тапалку!', '_blank');
         }
 
-        // Шанси та призи
+        // Чітко виставлені шанси (chance) для секторів монет
         const coinPrizes = [
-            { value: 5000, chance: 60 },
-            { value: 7000, chance: 60 },
-            { value: 10000, chance: 60 },
-            { value: 15000, chance: 50 },
-            { value: 20000, chance: 12 },
-            { value: 25000, chance: 5 },
-            { value: 30000, chance: 3 }
+            { value: 30000, chance: 3 },   // Шанс 3%
+            { value: 25000, chance: 5 },   // Шанс 5%
+            { value: 20000, chance: 12 },  // Шанс 12%
+            { value: 15000, chance: 50 },  // Шанс 50%
+            { value: 10000, chance: 60 },  // Шанс 60%
+            { value: 7000, chance: 60 },   // Шанс 60%
+            { value: 5000, chance: 60 }    // Шанс 60%
         ];
 
+        // Чітко виставлені шанси (chance) для секторів кристалів
         const gemPrizes = [
-            { value: 5, chance: 60 },
-            { value: 7, chance: 60 },
-            { value: 10, chance: 60 },
-            { value: 15, chance: 50 },
-            { value: 20, chance: 12 },
-            { value: 25, chance: 5 },
-            { value: 30, chance: 3 }
+            { value: 30, chance: 3 },      // Шанс 3%
+            { value: 25, chance: 5 },      // Шанс 5%
+            { value: 20, chance: 12 },     // Шанс 12%
+            { value: 15, chance: 50 },     // Шанс 50%
+            { value: 10, chance: 60 },     // Шанс 60%
+            { value: 7, chance: 60 },      // Шанс 60%
+            { value: 5, chance: 60 }       // Шанс 60%
         ];
 
         function createWheelSectors(wheelId, prizes, symbol) {
@@ -785,7 +776,6 @@
 
                 const sector = document.createElement('div');
                 sector.className = 'wheel-sector';
-                // Центруємо текст всередині кожного сектору на половині його кута
                 sector.style.transform = `rotate(${startAngle + angleStep / 2}deg)`;
                 sector.innerHTML = `<span>${prizeObj.value} ${symbol}</span>`;
                 wheel.appendChild(sector);
@@ -828,9 +818,13 @@
             spinBtn.disabled = true;
 
             const prizeIndex = getWeightedRandomIndex(coinPrizes);
-            const degreesPerItem = 360 / coinPrizes.length;
-            const extraSpins = 5 * 360;
-            const targetRotation = coinRotation + extraSpins + (360 - (prizeIndex * degreesPerItem + degreesPerItem / 2));
+            const totalItems = coinPrizes.length;
+            const angleStep = 360 / totalItems;
+            
+            const targetSectorCenter = prizeIndex * angleStep + angleStep / 2;
+            const extraSpins = 360 * 6;
+            const currentMod = coinRotation % 360;
+            const targetRotation = coinRotation + extraSpins + (360 - currentMod) - targetSectorCenter;
             
             coinRotation = targetRotation;
             document.getElementById('wheelCoin').style.transform = `rotate(${coinRotation}deg)`;
@@ -842,7 +836,7 @@
                 updateUI();
                 saveGame();
                 spinBtn.disabled = false;
-            }, 3000);
+            }, 3500);
         }
 
         let gemRotation = 0;
@@ -861,9 +855,13 @@
             spinBtn.disabled = true;
 
             const prizeIndex = getWeightedRandomIndex(gemPrizes);
-            const degreesPerItem = 360 / gemPrizes.length;
-            const extraSpins = 5 * 360;
-            const targetRotation = gemRotation + extraSpins + (360 - (prizeIndex * degreesPerItem + degreesPerItem / 2));
+            const totalItems = gemPrizes.length;
+            const angleStep = 360 / totalItems;
+            
+            const targetSectorCenter = prizeIndex * angleStep + angleStep / 2;
+            const extraSpins = 360 * 6;
+            const currentMod = gemRotation % 360;
+            const targetRotation = gemRotation + extraSpins + (360 - currentMod) - targetSectorCenter;
             
             gemRotation = targetRotation;
             document.getElementById('wheelGem').style.transform = `rotate(${gemRotation}deg)`;
@@ -875,7 +873,7 @@
                 updateUI();
                 saveGame();
                 spinBtn.disabled = false;
-            }, 3000);
+            }, 3500);
         }
     </script>
 </body>
