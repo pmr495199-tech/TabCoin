@@ -513,31 +513,50 @@
             element.classList.add('active');
         }
 
-        // Функція для купівлі кристалів через Telegram Stars інвойс
+        // Головна логіка купівлі кристалів через `@tabcoin1_bot`
         function buyGems(gemAmount, starPrice) {
-            // Перевіряємо чи гра запущена в Telegram
             if (tg && tg.openInvoice) {
-                // На тг-боєвіму сервері має генеруватися інвойс на оплату зірками. 
-                // Для прикладу тут показано виклик або симуляція успішної оплати:
-                
-                // Якщо у тебе на сервері створено інвойс через Bot API (createInvoiceLink), передай сюди посилання:
-                // tg.openInvoice(invoiceLink, (status) => { if(status === 'paid') { ... } });
-
-                // Для тестування прямо в додатку (або якщо бот ще не відправляє інвойс):
-                simulateSuccessfulPurchase(gemAmount, starPrice);
+                // Відправляємо запит на твій сервер / бот для створення інвойсу
+                fetch('/create-invoice', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : 0,
+                        gemAmount: gemAmount,
+                        starPrice: starPrice
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.invoiceLink) {
+                        // Відкриваємо офіційне вікно оплати зірками Telegram
+                        tg.openInvoice(data.invoiceLink, (status) => {
+                            if (status === 'paid') {
+                                gems += gemAmount;
+                                updateUI();
+                                saveGame();
+                                alert(`Успішно! Отримано +${gemAmount} 💎`);
+                            } else {
+                                console.log('Оплату скасовано');
+                            }
+                        });
+                    } else {
+                        alert('Помилка створення рахунку від бота!');
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Не вдалося зʼєднатися з сервером бота @tabcoin1_bot');
+                });
             } else {
-                // Демо-режим для перевірки поза Telegram
+                // Демо-режим, якщо запущено не в Telegram
                 if (confirm(`Підтвердити покупку ${gemAmount} кристалів за ${starPrice} зірок ⭐?`)) {
-                    simulateSuccessfulPurchase(gemAmount, starPrice);
+                    gems += gemAmount;
+                    updateUI();
+                    saveGame();
+                    alert(`Успішно! Отримано +${gemAmount} 💎`);
                 }
             }
-        }
-
-        function simulateSuccessfulPurchase(gemAmount, starPrice) {
-            gems += gemAmount;
-            updateUI();
-            saveGame();
-            alert(`успішно! Отримано +${gemAmount} 💎`);
         }
 
         function buyBoost(type, cost) {
