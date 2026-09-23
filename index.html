@@ -45,7 +45,6 @@
             flex-direction: column;
             justify-content: space-between;
             overflow-y: hidden;
-            transition: background-image 0.3s ease;
         }
 
         body::before {
@@ -783,24 +782,11 @@
             setTimeout(() => popup.remove(), 800);
         }
 
-        const backgroundMap = {
-            'tap': '1790097907298.png',
-            'boosts': '1790173352123.png',
-            'tasks': '1790173493994.png',
-            'friends': 'grunge-background-with-space-text-image_196038-16934.jpg',
-            'roulette': '1790173514227.png',
-            'exchange': '1790173469292.png'
-        };
-
         function switchTab(tabId, element) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             document.getElementById(`tab-${tabId}`).classList.add('active');
             element.classList.add('active');
-
-            if (backgroundMap[tabId]) {
-                document.body.style.backgroundImage = `url('${backgroundMap[tabId]}')`;
-            }
         }
 
         function switchRoulette(type, element) {
@@ -897,7 +883,7 @@
             window.open('https://t.me/share/url?url=https://t.me/tabcoin1_bot&text=Заходь у круту тапалку!', '_blank');
         }
 
-                const coinRoulettePrizes = [
+        const coinRoulettePrizes = [
             { text: "30k 🪙", gems: 0, coins: 30000, chance: 0.10 },
             { text: "25k 🪙", gems: 0, coins: 25000, chance: 0.15 },
             { text: "20k 🪙", gems: 0, coins: 20000, chance: 0.30 },
@@ -920,17 +906,20 @@
             const total = prizes.length;
             const angleStep = 360 / total;
 
-            let svgHTML = `<svg viewBox="0 0 100 100" style="width: 100%; height: 100%; transform: rotate(-90deg);">`;
+            let svgHTML = `<svg viewBox="0 0 100 100" style="width: 100%; height: 100%;">`;
             
             prizes.forEach((prize, index) => {
                 const startAngle = index * angleStep;
                 const endAngle = (index + 1) * angleStep;
-                const fillColor = index % 2 === 0 ? 'rgba(30, 41, 59, 0.9)' : 'rgba(51, 65, 85, 0.9)';
+                const fillColor = index % 2 === 0 ? 'rgba(30, 41, 59, 0.95)' : 'rgba(51, 65, 85, 0.95)';
                 
-                const x1 = 50 + 50 * Math.cos(Math.PI * startAngle / 180);
-                const y1 = 50 + 50 * Math.sin(Math.PI * startAngle / 180);
-                const x2 = 50 + 50 * Math.cos(Math.PI * endAngle / 180);
-                const y2 = 50 + 50 * Math.sin(Math.PI * endAngle / 180);
+                const radStart = Math.PI * (startAngle - 90) / 180;
+                const radEnd = Math.PI * (endAngle - 90) / 180;
+
+                const x1 = 50 + 50 * Math.cos(radStart);
+                const y1 = 50 + 50 * Math.sin(radStart);
+                const x2 = 50 + 50 * Math.cos(radEnd);
+                const y2 = 50 + 50 * Math.sin(radEnd);
                 const largeArcFlag = angleStep > 180 ? 1 : 0;
 
                 const pathData = `M 50 50 L ${x1} ${y1} A 50 50 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
@@ -938,11 +927,17 @@
                 svgHTML += `<path d="${pathData}" fill="${fillColor}" stroke="rgba(255, 255, 255, 0.15)" stroke-width="0.8"/>`;
 
                 const midAngle = startAngle + angleStep / 2;
+                const radMid = Math.PI * (midAngle - 90) / 180;
                 const textRadius = 32;
-                const textX = 50 + textRadius * Math.cos(Math.PI * midAngle / 180);
-                const textY = 50 + textRadius * Math.sin(Math.PI * midAngle / 180);
+                const textX = 50 + textRadius * Math.cos(radMid);
+                const textY = 50 + textRadius * Math.sin(radMid);
 
-                svgHTML += `<text x="${textX}" y="${textY}" fill="#ffffff" font-size="6" font-weight="900" text-anchor="middle" dominant-baseline="middle" transform="rotate(${midAngle + 90}, ${textX}, ${textY})" stroke="#000" stroke-width="0.3">${prize.text}</text>`;
+                let textAngle = midAngle;
+                if (textAngle > 90 && textAngle < 270) {
+                    textAngle += 180;
+                }
+
+                svgHTML += `<text x="${textX}" y="${textY}" fill="#ffffff" font-size="6" font-weight="900" text-anchor="middle" dominant-baseline="middle" transform="rotate(${textAngle}, ${textX}, ${textY})" stroke="#000" stroke-width="0.3">${prize.text}</text>`;
             });
 
             svgHTML += `</svg>`;
@@ -998,7 +993,7 @@
                 const wonGems = coinRoulettePrizes[prizeIndex].gems;
                 score += wonCoins;
                 gems += wonGems;
-                alert(`Вітаємо! Ви виграли ${wonGems} 💎!`);
+                alert(`Вітаємо! Ви виграли ${wonCoins} 🪙!`);
                 checkLevelProgression();
                 updateVisuals();
                 saveGame();
@@ -1038,7 +1033,7 @@
                 const wonGems = gemRoulettePrizes[prizeIndex].gems;
                 score += wonCoins;
                 gems += wonGems;
-                alert(`Вітаємо! Ви виграли ${wonCoins} 🪙!`);
+                alert(`Вітаємо! Ви виграли ${wonGems} 💎!`);
                 checkLevelProgression();
                 updateVisuals();
                 saveGame();
