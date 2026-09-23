@@ -95,27 +95,23 @@
             backdrop-filter: blur(10px);
         }
 
-        .coin-icon {
+        .coin-icon, .gem-icon {
             width: 26px;
             height: 26px;
-            background: var(--accent-gold);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 14px;
+        }
+
+        .coin-icon {
+            background: var(--accent-gold);
             box-shadow: 0 0 10px var(--accent-gold-glow);
         }
 
         .gem-icon {
-            width: 26px;
-            height: 26px;
             background: var(--accent-gem);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
             box-shadow: 0 0 10px var(--accent-gem-glow);
         }
 
@@ -316,8 +312,8 @@
 
         .wheel-wrapper {
             position: relative;
-            width: 230px;
-            height: 230px;
+            width: 240px;
+            height: 240px;
         }
 
         .wheel {
@@ -326,49 +322,30 @@
             border-radius: 50%;
             border: 4px solid var(--accent-gold);
             position: relative;
-            transition: transform 3.5s cubic-bezier(0.15, 0.85, 0.15, 1);
+            transition: transform 4s cubic-bezier(0.15, 0.85, 0.15, 1);
             overflow: hidden;
             box-shadow: 0 0 15px var(--accent-gold-glow);
         }
 
-        .wheel-sector {
-            position: absolute;
-            width: 50%;
-            height: 50%;
-            top: 0;
-            left: 50%;
-            transform-origin: 0% 100%;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding-right: 20px;
-            pointer-events: none;
-        }
-
-        .wheel-sector span {
-            display: inline-flex;
-            align-items: center;
-            gap: 2px;
-            font-size: 11px;
-            font-weight: 700;
-            color: #ffffff;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.9);
-            transform: rotate(90deg);
-            white-space: nowrap;
+        /* SVG Сектори всередині колеса для ідеального позиціонування */
+        .wheel svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg); /* Початок від верхньої стрілки */
         }
 
         .wheel-pointer {
             position: absolute;
-            top: -12px;
+            top: -14px;
             left: 50%;
             transform: translateX(-50%);
             width: 0;
             height: 0;
-            border-left: 9px solid transparent;
-            border-right: 9px solid transparent;
-            border-top: 16px solid var(--accent-gold);
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 18px solid var(--accent-gold);
             z-index: 10;
-            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5));
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.6));
         }
 
         .wheel-center {
@@ -376,14 +353,14 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 38px;
-            height: 38px;
+            width: 42px;
+            height: 42px;
             background: var(--accent-gold);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 18px;
             box-shadow: 0 0 10px rgba(0,0,0,0.5);
             z-index: 5;
         }
@@ -740,53 +717,69 @@
             window.open('https://t.me/share/url?url=https://t.me/tabcoin1_bot&text=Заходь у круту тапалку!', '_blank');
         }
 
+        // 7 секторів з вагами (шансами) та гарними емодзі
         const coinPrizes = [
-            { value: 30000, chance: 3 },
-            { value: 25000, chance: 5 },
-            { value: 20000, chance: 12 },
-            { value: 15000, chance: 50 },
-            { value: 10000, chance: 60 },
-            { value: 7000, chance: 60 },
-            { value: 5000, chance: 60 }
+            { text: "👑 30k", value: 30000, chance: 3 },
+            { text: "🔥 25k", value: 25000, chance: 5 },
+            { text: "⭐ 20k", value: 20000, chance: 12 },
+            { text: "💰 15k", value: 15000, chance: 50 },
+            { text: "🪙 10k", value: 10000, chance: 60 },
+            { text: "🪙 7k", value: 7000, chance: 60 },
+            { text: "🪙 5k", value: 5000, chance: 60 }
         ];
 
         const gemPrizes = [
-            { value: 30, chance: 3 },
-            { value: 25, chance: 5 },
-            { value: 20, chance: 12 },
-            { value: 15, chance: 50 },
-            { value: 10, chance: 60 },
-            { value: 7, chance: 60 },
-            { value: 5, chance: 60 }
+            { text: "💎 30", value: 30, chance: 3 },
+            { text: "💎 25", value: 25, chance: 5 },
+            { text: "💎 20", value: 20, chance: 12 },
+            { text: "💎 15", value: 15, chance: 50 },
+            { text: "💎 10", value: 10, chance: 60 },
+            { text: "💎 7", value: 7, chance: 60 },
+            { text: "💎 5", value: 5, chance: 60 }
         ];
 
-        function createWheelSectors(wheelId, prizes, symbol) {
-            const wheel = document.getElementById(wheelId);
+        // Побудова ідеального колеса через SVG всередині контейнера
+        function buildWheelSVG(wheelId, prizes) {
+            const wheelContainer = document.getElementById(wheelId);
             const total = prizes.length;
             const angleStep = 360 / total;
 
-            let gradientString = 'conic-gradient(';
-            prizes.forEach((prizeObj, index) => {
+            let svgHTML = `<svg viewBox="0 0 100 100">`;
+            
+            prizes.forEach((prize, index) => {
                 const startAngle = index * angleStep;
                 const endAngle = (index + 1) * angleStep;
-                const color = index % 2 === 0 ? '#1e293b' : '#334155';
-                gradientString += `${color} ${startAngle}deg ${endAngle}deg${index === total - 1 ? '' : ','}`;
+                
+                // Кольори секторів що чергуються
+                const fillColor = index % 2 === 0 ? '#1e293b' : '#334155';
+                
+                // Математика малювання секторів SVG піц-чарту
+                const x1 = 50 + 50 * Math.cos(Math.PI * startAngle / 180);
+                const y1 = 50 + 50 * Math.sin(Math.PI * startAngle / 180);
+                const x2 = 50 + 50 * Math.cos(Math.PI * endAngle / 180);
+                const y2 = 50 + 50 * Math.sin(Math.PI * endAngle / 180);
+                const largeArcFlag = angleStep > 180 ? 1 : 0;
 
-                const sector = document.createElement('div');
-                sector.className = 'wheel-sector';
-                // Центр сектора для коректного позиціонування тексту
-                const sectorCenterAngle = startAngle + angleStep / 2;
-                sector.style.transform = `rotate(${sectorCenterAngle}deg)`;
-                sector.innerHTML = `<span>${prizeObj.value} ${symbol}</span>`;
-                wheel.appendChild(sector);
+                const pathData = `M 50 50 L ${x1} ${y1} A 50 50 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
+
+                svgHTML += `<path d="${pathData}" fill="${fillColor}" stroke="#0f172a" stroke-width="0.5"/>`;
+
+                // Розрахунок позиції тексту по центру сектора
+                const midAngle = startAngle + angleStep / 2;
+                const textRadius = 32; // Радіус розташування тексту від центру
+                const textX = 50 + textRadius * Math.cos(Math.PI * midAngle / 180);
+                const textY = 50 + textRadius * Math.sin(Math.PI * midAngle / 180);
+
+                svgHTML += `<text x="${textX}" y="${textY}" fill="#ffffff" font-size="5.5" font-weight="bold" text-anchor="middle" dominant-baseline="middle" transform="rotate(${midAngle + 90}, ${textX}, ${textY})">${prize.text}</text>`;
             });
-            gradientString += ')';
-            wheel.style.background = gradientString;
+
+            svgHTML += `</svg>`;
+            wheelContainer.innerHTML = `<div class="wheel-center">🎯</div>` + svgHTML;
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            createWheelSectors('wheelCoin', coinPrizes, '🪙');
-            createWheelSectors('wheelGem', gemPrizes, '💎');
+            buildWheelSVG('wheelCoin', coinPrizes);
+            buildWheelSVG('wheelGem', gemPrizes);
         });
 
         function getWeightedRandomIndex(prizes) {
@@ -794,9 +787,7 @@
             let randomNum = Math.random() * totalWeight;
             
             for (let i = 0; i < prizes.length; i++) {
-                if (randomNum < prizes[i].chance) {
-                    return i;
-                }
+                if (randomNum < prizes[i].chance) return i;
                 randomNum -= prizes[i].chance;
             }
             return 0;
@@ -821,10 +812,11 @@
             const totalItems = coinPrizes.length;
             const angleStep = 360 / totalItems;
             
-            // Точний розрахунок кута, щоб стрілка (що дивиться на 0 градусів зверху) точно зупинилась по центру обраного сектора
+            // Розрахунок кута зупинки точно під верхню стрілку
             const targetSectorCenter = prizeIndex * angleStep + angleStep / 2;
-            const extraSpins = 360 * 6;
-            const targetRotation = coinRotation + extraSpins + (360 - (coinRotation % 360)) - targetSectorCenter;
+            const extraSpins = 360 * 7; // 7 повних обертів
+            const currentMod = coinRotation % 360;
+            const targetRotation = coinRotation + extraSpins + (360 - currentMod) + (360 - targetSectorCenter);
             
             coinRotation = targetRotation;
             document.getElementById('wheelCoin').style.transform = `rotate(${coinRotation}deg)`;
@@ -836,7 +828,7 @@
                 updateUI();
                 saveGame();
                 spinBtn.disabled = false;
-            }, 3500);
+            }, 4000);
         }
 
         let gemRotation = 0;
@@ -859,8 +851,9 @@
             const angleStep = 360 / totalItems;
             
             const targetSectorCenter = prizeIndex * angleStep + angleStep / 2;
-            const extraSpins = 360 * 6;
-            const targetRotation = gemRotation + extraSpins + (360 - (gemRotation % 360)) - targetSectorCenter;
+            const extraSpins = 360 * 7;
+            const currentMod = gemRotation % 360;
+            const targetRotation = gemRotation + extraSpins + (360 - currentMod) + (360 - targetSectorCenter);
             
             gemRotation = targetRotation;
             document.getElementById('wheelGem').style.transform = `rotate(${gemRotation}deg)`;
@@ -872,7 +865,7 @@
                 updateUI();
                 saveGame();
                 spinBtn.disabled = false;
-            }, 3500);
+            }, 4000);
         }
     </script>
 </body>
