@@ -45,6 +45,7 @@
             flex-direction: column;
             justify-content: space-between;
             overflow-y: hidden;
+            transition: background-image 0.3s ease;
         }
 
         body::before {
@@ -218,6 +219,7 @@
             max-width: 340px;
             margin-left: auto;
             margin-right: auto;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
         }
 
         .items-list {
@@ -562,7 +564,6 @@
         </div>
     </div>
 
-    <!-- Нова вкладка "Обміни" -->
     <div class="tab-content" id="tab-exchange">
         <div class="section-title">Обмін валют</div>
         <div class="items-list">
@@ -781,7 +782,6 @@
             alert(`🎉 Запрошено нового друга: ${randomName}! Отримано +2500 монет і +2 💎`);
         }
 
-        // Функція обміну монет на кристали
         function exchangeCoinsToGems() {
             const cost = 500000;
             const reward = 20;
@@ -791,7 +791,7 @@
                 gems += reward;
                 updateVisuals();
                 saveGame();
-                alert(`успішний обмін! Отримано +${reward} 💎`);
+                alert(`Успішний обмін! Отримано +${reward} 💎`);
             } else {
                 alert('Недостатньо монет! Потрібно 500 000 🪙');
             }
@@ -855,11 +855,26 @@
             setTimeout(() => popup.remove(), 800);
         }
 
+        // Зміна фону залежно від активної вкладки
+        const backgroundMap = {
+            'tap': '1790097907298.png',
+            'boosts': '1790173352123.png',
+            'tasks': '1790173493994.png',
+            'friends': 'grunge-background-with-space-text-image_196038-16934.jpg',
+            'roulette': '1790173514227.png',
+            'exchange': '1790173469292.png'
+        };
+
         function switchTab(tabId, element) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             document.getElementById(`tab-${tabId}`).classList.add('active');
             element.classList.add('active');
+
+            // Змінюємо фон для конкретної вкладки
+            if (backgroundMap[tabId]) {
+                document.body.style.backgroundImage = `url('${backgroundMap[tabId]}')`;
+            }
         }
 
         function switchRoulette(type, element) {
@@ -1068,7 +1083,7 @@
         function spinGemWheel() {
             const cost = 15;
             if (gems < cost) {
-                alert('Недостатньо кристалів! Потрібно 15 💎');
+                alert('Недостатня кількість кристалів! Потрібно 15 💎');
                 return;
             }
 
