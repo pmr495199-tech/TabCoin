@@ -897,22 +897,22 @@
             window.open('https://t.me/share/url?url=https://t.me/tabcoin1_bot&text=Заходь у круту тапалку!', '_blank');
         }
 
-        const coinRoulettePrizes = [
+                const coinRoulettePrizes = [
+            { text: "30k 🪙", gems: 0, coins: 30000, chance: 0.10 },
+            { text: "25k 🪙", gems: 0, coins: 25000, chance: 0.15 },
+            { text: "20k 🪙", gems: 0, coins: 20000, chance: 0.30 },
+            { text: "15k 🪙", gems: 0, coins: 15000, chance: 0.50 },
+            { text: "10k 🪙", gems: 0, coins: 10000, chance: 0.60 },
+            { text: "7k 🪙",  gems: 0, coins: 7000,  chance: 0.60 }
+        ];
+
+        const gemRoulettePrizes = [
             { text: "30💎", gems: 30, coins: 0, chance: 0.10 },
             { text: "25💎", gems: 25, coins: 0, chance: 0.15 },
             { text: "20💎", gems: 20, coins: 0, chance: 0.30 },
             { text: "15💎", gems: 15, coins: 0, chance: 0.50 },
             { text: "10💎", gems: 10, coins: 0, chance: 0.60 },
             { text: "5💎",  gems: 5,  coins: 0, chance: 0.60 }
-        ];
-
-        const gemRoulettePrizes = [
-            { text: "30k 🪙", gems: 0, coins: 30000, chance: 0.10 },
-            { text: "25k 🪙", gems: 0, coins: 25000, chance: 0.15 },
-            { text: "20k 🪙", gems: 0, coins: 20000, chance: 0.30 },
-            { text: "15k 🪙", gems: 0, coins: 15000, chance: 0.50 },
-            { text: "15k 🪙", gems: 0, coins: 15000, chance: 0.60 },
-            { text: "7k 🪙",  gems: 0, coins: 7000,  chance: 0.60 }
         ];
 
         function buildWheelSVG(wheelId, prizes) {
