@@ -471,6 +471,13 @@
                 </div>
                 <button class="item-btn" id="buyMaxenergyBtn" onclick="buyBoost('maxenergy')">Купити</button>
             </div>
+            <div class="item-card">
+                <div class="item-info">
+                    <h4>Швидкість відновлення</h4>
+                    <p id="regenInfo">Відновлення: 3/сек</p>
+                </div>
+                <button class="item-btn" id="buyRegenBtn" onclick="buyBoost('regen')">Купити</button>
+            </div>
         </div>
     </div>
 
@@ -571,21 +578,26 @@
         
         let multiclickLevel = Number(localStorage.getItem('tabcoin_multiLevel')) || 0;
         let maxenergyLevel = Number(localStorage.getItem('tabcoin_energyLevel')) || 0;
+        
+        // Рівень і значення відновлення енергії
+        let regenLevel = Number(localStorage.getItem('tabcoin_regenLevel')) || 0;
+        const regenValues = [3, 5, 10, 30, 50]; // Рівні: 0 -> 3, 1 -> 5, 2 -> 10, 3 -> 30, 4 -> 50
+        const regenPrices = [10000, 50000, 70000, 100000]; // Ціни для переходу на наступні рівні
 
         let taskStarted = localStorage.getItem('tabcoin_taskStarted') === 'true';
         let telegramTaskDone = localStorage.getItem('tabcoin_tgDone') === 'true';
         let refTaskDone = localStorage.getItem('tabcoin_refDone') === 'true';
 
-        // Енергія, яка тратиться за один клік (фіксовано 5)
         const energyCostPerClick = 5;
 
-        // Розрахунок офлайн енергії при завантаженні гри
+        // Розрахунок офлайн енергії з урахуванням поточного рівня відновлення
         let lastTime = Number(localStorage.getItem('tabcoin_lastTime')) || Date.now();
         let currentTime = Date.now();
         let elapsedSeconds = Math.floor((currentTime - lastTime) / 1000);
 
         if (elapsedSeconds > 0 && energy < maxEnergy) {
-            let restoredEnergy = elapsedSeconds * 3;
+            let currentRegenRate = regenValues[Math.min(regenLevel, regenValues.length - 1)];
+            let restoredEnergy = elapsedSeconds * currentRegenRate;
             energy = Math.min(maxEnergy, energy + restoredEnergy);
         }
 
@@ -600,6 +612,8 @@
         const characterImg = document.getElementById('characterImg');
         const buyMulticlickBtn = document.getElementById('buyMulticlickBtn');
         const buyMaxenergyBtn = document.getElementById('buyMaxenergyBtn');
+        const buyRegenBtn = document.getElementById('buyRegenBtn');
+        const regenInfo = document.getElementById('regenInfo');
 
         function getBoostPrice(boostLevel) {
             if (boostLevel < boostPrices.length) {
@@ -617,6 +631,7 @@
             localStorage.setItem('tabcoin_level', level);
             localStorage.setItem('tabcoin_multiLevel', multiclickLevel);
             localStorage.setItem('tabcoin_energyLevel', maxenergyLevel);
+            localStorage.setItem('tabcoin_regenLevel', regenLevel);
             localStorage.setItem('tabcoin_taskStarted', taskStarted);
             localStorage.setItem('tabcoin_tgDone', telegramTaskDone);
             localStorage.setItem('tabcoin_refDone', refTaskDone);
@@ -634,11 +649,23 @@
         function updateVisuals() {
             scoreElement.textContent = score;
             gemsElement.textContent = gems;
-            energyText.textContent = `${energy} / ${maxEnergy}`;
+            energyText.textContent = `${Math.floor(energy)} / ${maxEnergy}`;
             energyFill.style.width = `${(energy / maxEnergy) * 100}%`;
             
             buyMulticlickBtn.textContent = `Купити (${getBoostPrice(multiclickLevel)} 🪙)`;
             buyMaxenergyBtn.textContent = `Купити (${getBoostPrice(maxenergyLevel)} 🪙)`;
+
+            // Оновлення кнопки та тексту швидкості відновлення
+            let currentRegen = regenValues[Math.min(regenLevel, regenValues.length - 1)];
+            if (regenLevel < regenPrices.length) {
+                regenInfo.textContent = `Відновлення: ${currentRegen}/сек (Наступний: ${regenValues[regenLevel+1]}/сек)`;
+                buyRegenBtn.textContent = `Купити (${regenPrices[regenLevel]} 🪙)`;
+                buyRegenBtn.disabled = false;
+            } else {
+                regenInfo.textContent = `Відновлення: ${currentRegen}/сек (Максимум)`;
+                buyRegenBtn.textContent = 'Максимум';
+                buyRegenBtn.disabled = true;
+            }
 
             if (level >= 2) {
                 levelBadge.textContent = 'Рівень 2 👑';
@@ -672,7 +699,6 @@
         clickArea.addEventListener('touchstart', (e) => {
             e.preventDefault();
             for (let i = 0; i < e.changedTouches.length; i++) {
-                // Перевіряємо чи вистачає енергії (5 одиниць)
                 if (energy >= energyCostPerClick) {
                     score += clickPower;
                     energy -= energyCostPerClick;
@@ -684,9 +710,11 @@
             saveGame();
         }, { passive: false });
 
+        // Щобсекундне відновлення енергії з урахуванням поточного темпу
         setInterval(() => {
             if (energy < maxEnergy) {
-                energy = Math.min(maxEnergy, energy + 3);
+                let currentRegenRate = regenValues[Math.min(regenLevel, regenValues.length - 1)];
+                energy = Math.min(maxEnergy, energy + currentRegenRate);
                 updateVisuals();
                 saveGame();
             }
@@ -747,6 +775,19 @@
                 } else {
                     alert('Недостатньо монет!');
                 }
+            } else if (type === 'regen') {
+                if (regenLevel < regenPrices.length) {
+                    let cost = regenPrices[regenLevel];
+                    if (score >= cost) {
+                        score -= cost;
+                        regenLevel++;
+                        alert('Швидкість відновлення енергії успішно підвищено!');
+                        checkLevelProgression();
+                        saveGame();
+                    } else {
+                        alert('Недостатньо монет!');
+                    }
+                }
             }
         }
 
@@ -796,10 +837,10 @@
         }
 
         const coinPrizes = [
-            { text: "🪙 30k", value: 30000, chance: 3 },
-            { text: "🪙 25k", value: 25000, chance: 5 },
-            { text: "🪙 20k", value: 20000, chance: 12 },
-            { text: "🪙 15k", value: 15000, chance: 50 },
+            { text: "👑 30k", value: 30000, chance: 3 },
+            { text: "🔥 25k", value: 25000, chance: 5 },
+            { text: "⭐ 20k", value: 20000, chance: 12 },
+            { text: "💰 15k", value: 15000, chance: 50 },
             { text: "🪙 10k", value: 10000, chance: 60 },
             { text: "🪙 7k", value: 7000, chance: 60 },
             { text: "🪙 5k", value: 5000, chance: 60 }
