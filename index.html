@@ -341,7 +341,7 @@
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            padding-right: 22px;
+            padding-right: 20px;
             pointer-events: none;
         }
 
@@ -740,26 +740,24 @@
             window.open('https://t.me/share/url?url=https://t.me/tabcoin1_bot&text=Заходь у круту тапалку!', '_blank');
         }
 
-        // Чітко виставлені шанси (chance) для секторів монет
         const coinPrizes = [
-            { value: 30000, chance: 3 },   // Шанс 3%
-            { value: 25000, chance: 5 },   // Шанс 5%
-            { value: 20000, chance: 12 },  // Шанс 12%
-            { value: 15000, chance: 50 },  // Шанс 50%
-            { value: 10000, chance: 60 },  // Шанс 60%
-            { value: 7000, chance: 60 },   // Шанс 60%
-            { value: 5000, chance: 60 }    // Шанс 60%
+            { value: 30000, chance: 3 },
+            { value: 25000, chance: 5 },
+            { value: 20000, chance: 12 },
+            { value: 15000, chance: 50 },
+            { value: 10000, chance: 60 },
+            { value: 7000, chance: 60 },
+            { value: 5000, chance: 60 }
         ];
 
-        // Чітко виставлені шанси (chance) для секторів кристалів
         const gemPrizes = [
-            { value: 30, chance: 3 },      // Шанс 3%
-            { value: 25, chance: 5 },      // Шанс 5%
-            { value: 20, chance: 12 },     // Шанс 12%
-            { value: 15, chance: 50 },     // Шанс 50%
-            { value: 10, chance: 60 },     // Шанс 60%
-            { value: 7, chance: 60 },      // Шанс 60%
-            { value: 5, chance: 60 }       // Шанс 60%
+            { value: 30, chance: 3 },
+            { value: 25, chance: 5 },
+            { value: 20, chance: 12 },
+            { value: 15, chance: 50 },
+            { value: 10, chance: 60 },
+            { value: 7, chance: 60 },
+            { value: 5, chance: 60 }
         ];
 
         function createWheelSectors(wheelId, prizes, symbol) {
@@ -776,7 +774,9 @@
 
                 const sector = document.createElement('div');
                 sector.className = 'wheel-sector';
-                sector.style.transform = `rotate(${startAngle + angleStep / 2}deg)`;
+                // Центр сектора для коректного позиціонування тексту
+                const sectorCenterAngle = startAngle + angleStep / 2;
+                sector.style.transform = `rotate(${sectorCenterAngle}deg)`;
                 sector.innerHTML = `<span>${prizeObj.value} ${symbol}</span>`;
                 wheel.appendChild(sector);
             });
@@ -821,10 +821,10 @@
             const totalItems = coinPrizes.length;
             const angleStep = 360 / totalItems;
             
+            // Точний розрахунок кута, щоб стрілка (що дивиться на 0 градусів зверху) точно зупинилась по центру обраного сектора
             const targetSectorCenter = prizeIndex * angleStep + angleStep / 2;
             const extraSpins = 360 * 6;
-            const currentMod = coinRotation % 360;
-            const targetRotation = coinRotation + extraSpins + (360 - currentMod) - targetSectorCenter;
+            const targetRotation = coinRotation + extraSpins + (360 - (coinRotation % 360)) - targetSectorCenter;
             
             coinRotation = targetRotation;
             document.getElementById('wheelCoin').style.transform = `rotate(${coinRotation}deg)`;
@@ -860,8 +860,7 @@
             
             const targetSectorCenter = prizeIndex * angleStep + angleStep / 2;
             const extraSpins = 360 * 6;
-            const currentMod = gemRotation % 360;
-            const targetRotation = gemRotation + extraSpins + (360 - currentMod) - targetSectorCenter;
+            const targetRotation = gemRotation + extraSpins + (360 - (gemRotation % 360)) - targetSectorCenter;
             
             gemRotation = targetRotation;
             document.getElementById('wheelGem').style.transform = `rotate(${gemRotation}deg)`;
