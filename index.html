@@ -22,7 +22,6 @@
             user-select: none;
             -webkit-user-select: none;
             -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation; /* Запобігає зуму при швидких тапах */
         }
 
         body {
@@ -122,6 +121,7 @@
             -webkit-tap-highlight-color: transparent;
             -webkit-touch-callout: none;
             outline: none;
+            touch-action: none; /* Найважливіше: вимикає стандартні жести браузера для мультитачу */
         }
 
         .character-wrapper:focus {
@@ -311,7 +311,6 @@
         </div>
     </header>
 
-    <!-- Вкладка 1: Тап -->
     <div class="tab-content active" id="tab-tap">
         <div class="character-wrapper" id="clickArea">
             <img src="1790090929041.png" alt="Крокодил" class="character-img">
@@ -328,7 +327,6 @@
         </div>
     </div>
 
-    <!-- Вкладка 2: Бусти -->
     <div class="tab-content" id="tab-boosts">
         <div class="section-title">Покращення</div>
         <div class="items-list">
@@ -349,7 +347,6 @@
         </div>
     </div>
 
-    <!-- Вкладка 3: Завдання -->
     <div class="tab-content" id="tab-tasks">
         <div class="section-title">Щоденні завдання</div>
         <div class="items-list">
@@ -370,7 +367,6 @@
         </div>
     </div>
 
-    <!-- Вкладка 4: Друзі -->
     <div class="tab-content" id="tab-friends">
         <div class="section-title">Реферальна система</div>
         <div class="items-list">
@@ -384,7 +380,6 @@
         </div>
     </div>
 
-    <!-- Навігація -->
     <nav>
         <button class="nav-item active" onclick="switchTab('tap', this)">
             <span class="nav-icon">⚡</span>
@@ -449,17 +444,23 @@
             document.getElementById('refProgress').textContent = 'Виконано: 10 000 / 10 000';
         }
 
-        // Використовуємо pointerdown замість click для підтримки мультитачу (кілька пальців)
-        clickArea.addEventListener('pointerdown', (e) => {
-            if (energy >= clickPower) {
-                score += clickPower;
-                energy -= clickPower;
+        // Повноцінна підтримка мультитачу через touchstart (обробка кожного пальця окремо)
+        clickArea.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Запобігає емуляції кліків та затримкам на мобільних
 
-                updateUI();
-                showFloatingText(e);
-                saveGame();
+            for (let i = 0; i < e.changedTouches.length; i++) {
+                if (energy >= clickPower) {
+                    score += clickPower;
+                    energy -= clickPower;
+
+                    let touch = e.changedTouches[i];
+                    showFloatingTextAt(touch.clientX, touch.clientY);
+                }
             }
-        });
+
+            updateUI();
+            saveGame();
+        }, { passive: false });
 
         setInterval(() => {
             if (energy < maxEnergy) {
@@ -476,10 +477,10 @@
             energyFill.style.width = `${percentage}%`;
         }
 
-        function showFloatingText(e) {
+        function showFloatingTextAt(clientX, clientY) {
             const rect = clickArea.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+            const x = clientX - rect.left;
+            const y = clientY - rect.top;
 
             const popup = document.createElement('div');
             popup.className = 'click-pop';
