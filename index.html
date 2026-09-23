@@ -13,7 +13,7 @@
             --accent-gem-glow: rgba(56, 189, 248, 0.4);
             --text-white: #ffffff;
             --text-secondary: #94a3b8;
-            --panel-bg: rgba(15, 23, 42, 0.82);
+            --panel-bg: rgba(15, 23, 42, 0.85);
             --border-color: rgba(255, 255, 255, 0.1);
         }
 
@@ -131,7 +131,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 20px;
+            gap: 15px;
             padding: 0 20px;
             overflow-y: auto;
         }
@@ -147,9 +147,6 @@
             align-items: center;
             justify-content: center;
             transition: transform 0.1s ease;
-            -webkit-tap-highlight-color: transparent;
-            -webkit-touch-callout: none;
-            outline: none;
             touch-action: none;
         }
 
@@ -210,7 +207,7 @@
         .section-title {
             font-size: 20px;
             font-weight: 700;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
             color: var(--accent-gold);
             align-self: flex-start;
             max-width: 340px;
@@ -272,26 +269,56 @@
             cursor: not-allowed;
         }
 
-        /* Стилі для рулетки */
-        .roulette-container {
+        /* Стилі для рулеток */
+        .roulette-switcher {
             display: flex;
+            gap: 8px;
+            width: 100%;
+            max-width: 340px;
+        }
+
+        .roulette-switch-btn {
+            flex: 1;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 8px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .roulette-switch-btn.active {
+            background: var(--accent-gold);
+            color: #78350f;
+            border-color: var(--accent-gold);
+        }
+
+        .roulette-container {
+            display: none;
             flex-direction: column;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
             width: 100%;
             max-width: 340px;
             background: var(--panel-bg);
             border: 1px solid var(--border-color);
-            padding: 20px;
+            padding: 15px;
             border-radius: 16px;
             backdrop-filter: blur(10px);
             text-align: center;
         }
 
+        .roulette-container.active {
+            display: flex;
+        }
+
         .wheel-wrapper {
             position: relative;
-            width: 220px;
-            height: 220px;
+            width: 200px;
+            height: 200px;
         }
 
         .wheel {
@@ -300,12 +327,13 @@
             border-radius: 50%;
             border: 4px solid var(--accent-gold);
             background: conic-gradient(
-                #1e293b 0deg 60deg,
-                #334155 60deg 120deg,
-                #1e293b 120deg 180deg,
-                #334155 180deg 240deg,
-                #1e293b 240deg 300deg,
-                #334155 300deg 360deg
+                #1e293b 0deg 51.4deg,
+                #334155 51.4deg 102.8deg,
+                #1e293b 102.8deg 154.2deg,
+                #334155 154.2deg 205.6deg,
+                #1e293b 205.6deg 257deg,
+                #334155 257deg 308.4deg,
+                #1e293b 308.4deg 360deg
             );
             position: relative;
             transition: transform 3s cubic-bezier(0.15, 0.85, 0.15, 1);
@@ -322,31 +350,23 @@
             transform: translateX(-50%);
             width: 0;
             height: 0;
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-            border-top: 18px solid var(--accent-gold);
+            border-left: 9px solid transparent;
+            border-right: 9px solid transparent;
+            border-top: 16px solid var(--accent-gold);
             z-index: 10;
         }
 
         .wheel-center {
             position: absolute;
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             background: var(--accent-gold);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 16px;
             box-shadow: 0 0 10px rgba(0,0,0,0.5);
-        }
-
-        .wheel-label {
-            position: absolute;
-            font-size: 11px;
-            font-weight: bold;
-            color: var(--text-white);
-            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
         }
 
         nav {
@@ -391,14 +411,8 @@
         }
 
         @keyframes floatUp {
-            0% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-            100% {
-                opacity: 0;
-                transform: translateY(-80px) scale(1.3);
-            }
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-80px) scale(1.3); }
         }
     </style>
 </head>
@@ -407,12 +421,10 @@
     <header>
         <div class="game-title">TabCoin Mining</div>
         <div class="balances-wrapper">
-            <!-- Монети (Зліва) -->
             <div class="balance-container">
                 <div class="coin-icon">🪙</div>
                 <div class="balance-score" id="score">764</div>
             </div>
-            <!-- Кристали (Справа у кружечку) -->
             <div class="balance-container">
                 <div class="gem-icon">💎</div>
                 <div class="balance-score" id="gems">10</div>
@@ -493,20 +505,38 @@
         </div>
     </div>
 
-    <!-- Вкладка 5: Рулетка -->
+    <!-- Вкладка 5: Рулетки (Дві різні) -->
     <div class="tab-content" id="tab-roulette">
         <div class="section-title">Колесо Фортуни</div>
-        <div class="roulette-container">
-            <p style="font-size: 13px; color: var(--text-secondary);">Випробуй удачу та виграй цінні призи!</p>
-            
+        
+        <!-- Перемикач рулеток -->
+        <div class="roulette-switcher">
+            <button class="roulette-switch-btn active" onclick="switchRoulette('coin', this)">🪙 Монетна</button>
+            <button class="roulette-switch-btn" onclick="switchRoulette('gem', this)">💎 Кришталева</button>
+        </div>
+
+        <!-- Монетна рулетка -->
+        <div class="roulette-container active" id="roulette-coin">
+            <p style="font-size: 12px; color: var(--text-secondary);">Ціна прокрутки: 7 000 🪙</p>
             <div class="wheel-wrapper">
                 <div class="wheel-pointer"></div>
-                <div class="wheel" id="wheel">
-                    <div class="wheel-center">🎁</div>
+                <div class="wheel" id="wheelCoin">
+                    <div class="wheel-center">🪙</div>
                 </div>
             </div>
+            <button class="item-btn" id="spinCoinBtn" onclick="spinCoinWheel()" style="width: 100%; padding: 10px; font-size: 14px;">Крутити (7 000 🪙)</button>
+        </div>
 
-            <button class="item-btn" id="spinBtn" onclick="spinWheel()" style="width: 100%; padding: 12px; font-size: 15px;">Крутити (Безкоштовно)</button>
+        <!-- Кришталева рулетка -->
+        <div class="roulette-container" id="roulette-gem">
+            <p style="font-size: 12px; color: var(--text-secondary);">Ціна прокрутки: 2 💎</p>
+            <div class="wheel-wrapper">
+                <div class="wheel-pointer"></div>
+                <div class="wheel" id="wheelGem" style="border-color: var(--accent-gem);">
+                    <div class="wheel-center" style="background: var(--accent-gem);">💎</div>
+                </div>
+            </div>
+            <button class="item-btn" id="spinGemBtn" onclick="spinGemWheel()" style="width: 100%; padding: 10px; font-size: 14px; background: var(--accent-gem); color: #0369a1;">Крутити (2 💎)</button>
         </div>
     </div>
 
@@ -543,7 +573,6 @@
         let taskStarted = localStorage.getItem('tabcoin_taskStarted') === 'true';
         let telegramTaskDone = localStorage.getItem('tabcoin_tgDone') === 'true';
         let refTaskDone = localStorage.getItem('tabcoin_refDone') === 'true';
-        let lastSpinTime = Number(localStorage.getItem('tabcoin_lastSpin')) || 0;
 
         const scoreElement = document.getElementById('score');
         const gemsElement = document.getElementById('gems');
@@ -560,7 +589,6 @@
             localStorage.setItem('tabcoin_taskStarted', taskStarted);
             localStorage.setItem('tabcoin_tgDone', telegramTaskDone);
             localStorage.setItem('tabcoin_refDone', refTaskDone);
-            localStorage.setItem('tabcoin_lastSpin', lastSpinTime);
         }
 
         scoreElement.textContent = score;
@@ -587,17 +615,14 @@
 
         clickArea.addEventListener('touchstart', (e) => {
             e.preventDefault();
-
             for (let i = 0; i < e.changedTouches.length; i++) {
                 if (energy >= clickPower) {
                     score += clickPower;
                     energy -= clickPower;
-
                     let touch = e.changedTouches[i];
                     showFloatingTextAt(touch.clientX, touch.clientY);
                 }
             }
-
             updateUI();
             saveGame();
         }, { passive: false });
@@ -614,37 +639,31 @@
             scoreElement.textContent = score;
             gemsElement.textContent = gems;
             energyText.textContent = `${energy} / ${maxEnergy}`;
-            const percentage = (energy / maxEnergy) * 100;
-            energyFill.style.width = `${percentage}%`;
+            energyFill.style.width = `${(energy / maxEnergy) * 100}%`;
         }
 
         function showFloatingTextAt(clientX, clientY) {
             const rect = clickArea.getBoundingClientRect();
-            const x = clientX - rect.left;
-            const y = clientY - rect.top;
-
             const popup = document.createElement('div');
             popup.className = 'click-pop';
             popup.textContent = `+${clickPower}`;
-            popup.style.left = `${x}px`;
-            popup.style.top = `${y}px`;
-
+            popup.style.left = `${clientX - rect.left}px`;
+            popup.style.top = `${clientY - rect.top}px`;
             clickArea.appendChild(popup);
-
-            setTimeout(() => {
-                popup.remove();
-            }, 800);
+            setTimeout(() => popup.remove(), 800);
         }
 
         function switchTab(tabId, element) {
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             document.getElementById(`tab-${tabId}`).classList.add('active');
+            element.classList.add('active');
+        }
+
+        function switchRoulette(type, element) {
+            document.querySelectorAll('.roulette-container').forEach(cont => cont.classList.remove('active'));
+            document.querySelectorAll('.roulette-switch-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`roulette-${type}`).classList.add('active');
             element.classList.add('active');
         }
 
@@ -653,7 +672,7 @@
                 score -= cost;
                 if (type === 'multiclick') {
                     clickPower += 1;
-                    alert('Буст успішно куплено! Тепер за один тап дається більше монет.');
+                    alert('Буст успішно куплено!');
                 } else if (type === 'maxenergy') {
                     maxEnergy += 500;
                     energy = maxEnergy;
@@ -691,7 +710,6 @@
 
         function checkReferralProgress() {
             let friendReachedGoal = true; 
-
             if (friendReachedGoal) {
                 score += 10000;
                 gems += 10;
@@ -702,65 +720,82 @@
                 document.getElementById('refProgress').textContent = 'Виконано: 10 000 / 10 000';
                 updateUI();
                 saveGame();
-                alert('Вітаю! Твій друг натапав 10 000 монет, ти отримав нагороду та кристали!');
+                alert('Вітаю! Нагороду за друга отримано!');
             } else {
-                alert('Друг ще не натапав 10 000 монет. Почекай трохи!');
+                alert('Друг ще не натапав 10 000 монет.');
             }
         }
 
         function inviteFriend() {
-            window.open('https://t.me/share/url?url=https://t.me/tabcoin1_bot&text=Заходь у круту тапалку та заробляй монети!', '_blank');
+            window.open('https://t.me/share/url?url=https://t.me/tabcoin1_bot&text=Заходь у круту тапалку!', '_blank');
         }
 
-        // Логіка рулетки
-        let currentRotation = 0;
-        const prizes = [
-            { name: "+500 Монет", type: "score", val: 500 },
-            { name: "+2 Кристали", type: "gems", val: 2 },
-            { name: "+2000 Монет", type: "score", val: 2000 },
-            { name: "+5 Кристалів", type: "gems", val: 5 },
-            { name: "+100 Монет", type: "score", val: 100 },
-            { name: "Спробуй знову", type: "none", val: 0 }
-        ];
+        // Логіка Монетної рулетки (Ціна: 7000 монет)
+        let coinRotation = 0;
+        const coinPrizes = [5000, 7000, 10000, 15000, 20000, 25000, 30000];
 
-        function spinWheel() {
-            const now = Date.now();
-            const cooldown = 60 * 1000; // 1 хвилина затримки між прокрутками
-
-            if (now - lastSpinTime < cooldown) {
-                const remainingSeconds = Math.ceil((cooldown - (now - lastSpinTime)) / 1000);
-                alert(`Колесо можна крутити знову через ${remainingSeconds} сек.`);
+        function spinCoinWheel() {
+            const cost = 7000;
+            if (score < cost) {
+                alert('Недостатньо монет! Потрібно 7 000 🪙');
                 return;
             }
 
-            const spinBtn = document.getElementById('spinBtn');
+            score -= cost;
+            updateUI();
+            saveGame();
+
+            const spinBtn = document.getElementById('spinCoinBtn');
             spinBtn.disabled = true;
 
-            // Випадковий вибір сектора (від 0 до 5)
-            const prizeIndex = Math.floor(Math.random() * prizes.length);
-            const degreesPerItem = 360 / prizes.length;
+            const prizeIndex = Math.floor(Math.random() * coinPrizes.length);
+            const degreesPerItem = 360 / coinPrizes.length;
+            const extraSpins = 5 * 360;
+            const targetRotation = coinRotation + extraSpins + (360 - (prizeIndex * degreesPerItem + degreesPerItem / 2));
             
-            // Розрахунок кута для зупинки стрілки на потрібному секторі
-            const extraSpins = 5 * 360; // 5 повних обертів
-            const targetRotation = currentRotation + extraSpins + (360 - (prizeIndex * degreesPerItem + degreesPerItem / 2));
-            
-            currentRotation = targetRotation;
-            const wheel = document.getElementById('wheel');
-            wheel.style.transform = `rotate(${currentRotation}deg)`;
+            coinRotation = targetRotation;
+            document.getElementById('wheelCoin').style.transform = `rotate(${coinRotation}deg)`;
 
             setTimeout(() => {
-                const prize = prizes[prizeIndex];
-                if (prize.type === 'score') {
-                    score += prize.val;
-                    alert(`Вітаємо! Ваш виграш: ${prize.name}`);
-                } else if (prize.type === 'gems') {
-                    gems += prize.val;
-                    alert(`Вітаємо! Ваш виграш: ${prize.name}`);
-                } else {
-                    alert('На жаль, цього разу без виграшу!');
-                }
+                const won = coinPrizes[prizeIndex];
+                score += won;
+                alert(`Вітаємо! Ви виграли ${won} монет 🪙!`);
+                updateUI();
+                saveGame();
+                spinBtn.disabled = false;
+            }, 3000);
+        }
 
-                lastSpinTime = Date.now();
+        // Логіка Кришталевої рулетки (Ціна: 2 кристали)
+        let gemRotation = 0;
+        const gemPrizes = [5, 7, 10, 15, 20, 25, 30];
+
+        function spinGemWheel() {
+            const cost = 2;
+            if (gems < cost) {
+                alert('Недостатньо кристалів! Потрібно 2 💎');
+                return;
+            }
+
+            gems -= cost;
+            updateUI();
+            saveGame();
+
+            const spinBtn = document.getElementById('spinGemBtn');
+            spinBtn.disabled = true;
+
+            const prizeIndex = Math.floor(Math.random() * gemPrizes.length);
+            const degreesPerItem = 360 / gemPrizes.length;
+            const extraSpins = 5 * 360;
+            const targetRotation = gemRotation + extraSpins + (360 - (prizeIndex * degreesPerItem + degreesPerItem / 2));
+            
+            gemRotation = targetRotation;
+            document.getElementById('wheelGem').style.transform = `rotate(${gemRotation}deg)`;
+
+            setTimeout(() => {
+                const won = gemPrizes[prizeIndex];
+                gems += won;
+                alert(`Вітаємо! Ви виграли ${won} кристалів 💎!`);
                 updateUI();
                 saveGame();
                 spinBtn.disabled = false;
@@ -769,3 +804,4 @@
     </script>
 </body>
 </html>
+                      
