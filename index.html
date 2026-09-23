@@ -742,37 +742,26 @@
             }
         }
 
-        function buyWithStars(gemsAmount, starsPrice) {
-            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
-                // Реальний запит на сервер для Telegram Зірок через рахунок (Invoice)
-                fetch(`https://твій-сервер.com/create-invoice?gems=${gemsAmount}&stars=${starsPrice}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.invoiceLink) {
-                            window.Telegram.WebApp.openInvoice(data.invoiceLink, (status) => {
-                                if (status === 'paid') {
-                                    gems += gemsAmount;
-                                    updateVisuals();
-                                    saveGame();
-                                    alert(`Оплата успішна! Отримано +${gemsAmount} 💎`);
-                                } else {
-                                    alert('Оплату було скасовано.');
-                                }
-                            });
-                        }
-                    })
-                    .catch(err => {
-                        console.log('Помилка сервера:', err);
-                        alert('Сервер оплати наразі недоступний.');
-                    });
-            } else {
-                // Якщо відкрити поза Telegram (для зручності тестування у браузері) — одразу нараховуємо без мови "Отмена"
+                function buyWithStars(gemsAmount, starsPrice) {
+            // Перевіряємо, чи ми у середовищі Telegram
+            if (window.Telegram && window.Telegram.WebApp) {
+                // Якщо у вас поки немає сервера для генерації інвойсів, 
+                // робимо миттєве зарахування для зручного тестування всередині Telegram:
                 gems += gemsAmount;
                 updateVisuals();
                 saveGame();
-                alert(`[Тест] Успішно зараховано +${gemsAmount} 💎 за ${starsPrice} ⭐!`);
-            }
-        }
+                
+                // Викликаємо стандартне вікно сповіщення Telegram
+                window.Telegram.WebApp.showAlert(`Успішно! Ви придбали +${gemsAmount} 💎 за ${starsPrice} ⭐!`);
+            } else {
+                // Якщо раптом відкрито у звичайному браузері
+                gems += gemsAmount;
+                updateVisuals();
+                saveGame();
+                alert(`Успішно зараховано +${gemsAmount} 💎 за ${starsPrice} ⭐!`);
+            
+        
+
 
         updateVisuals();
 
