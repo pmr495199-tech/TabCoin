@@ -637,7 +637,10 @@
         }
 
         function checkLevelProgression() {
-            if (score >= 170000 && level < 3) {
+            if (score >= 340000 && level < 4) {
+                level = 4;
+                alert('🚀 Легендарно! Ви досягли 340 000 монет та перейшли на 4-й рівень! Ваш крокодил досяг максимальної сили!');
+            } else if (score >= 170000 && score < 340000 && level < 3) {
                 level = 3;
                 alert('🏆 Неймовірно! Ви досягли 170 000 монет та перейшли на 3-й рівень! Крокодил набув епічного вигляду!');
             } else if (score >= 70000 && score < 170000 && level < 2) {
@@ -667,7 +670,10 @@
                 buyRegenBtn.disabled = true;
             }
 
-            if (level >= 3) {
+            if (level >= 4) {
+                levelBadge.textContent = 'Рівень 4 ⚡';
+                characterImg.src = '1790165750453.png';
+            } else if (level === 3) {
                 levelBadge.textContent = 'Рівень 3 🌟';
                 characterImg.src = '1790163627383.png';
             } else if (level === 2) {
