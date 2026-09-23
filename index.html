@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>TabCoin</title>
-    <!-- Підключаємо офіційний Telegram WebApp SDK -->
+    <!-- Підключаємо Telegram Web App скрипт для оплати зірками -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -145,7 +145,6 @@
             align-items: center;
             justify-content: center;
             transition: transform 0.1s ease;
-            outline: none;
             touch-action: none;
         }
 
@@ -258,14 +257,13 @@
             transition: opacity 0.2s;
         }
 
-        .item-btn:active {
-            opacity: 0.8;
+        .item-btn.gem-btn {
+            background: var(--accent-gem);
+            color: #0f172a;
         }
 
-        .item-btn:disabled {
-            background: #475569;
-            color: #94a3b8;
-            cursor: not-allowed;
+        .item-btn:active {
+            opacity: 0.8;
         }
 
         nav {
@@ -320,10 +318,12 @@
     <header>
         <div class="game-title">TabCoin Mining</div>
         <div class="balances-wrapper">
+            <!-- Монети (Зліва) -->
             <div class="balance-container">
                 <div class="coin-icon">🪙</div>
                 <div class="balance-score" id="score">764</div>
             </div>
+            <!-- Кристали (Справа у кружечку) -->
             <div class="balance-container">
                 <div class="gem-icon">💎</div>
                 <div class="balance-score" id="gems">10</div>
@@ -336,6 +336,7 @@
         <div class="character-wrapper" id="clickArea">
             <img src="1790090929041.png" alt="Крокодил" class="character-img">
         </div>
+
         <div class="energy-section">
             <div class="energy-info">
                 <span class="energy-title">⚡ Енергія</span>
@@ -347,16 +348,30 @@
         </div>
     </div>
 
-    <!-- Вкладка 2: Магазин (Зірки Telegram) -->
+    <!-- Вкладка 2: Магазин Кристалів (Зірки Telegram) -->
     <div class="tab-content" id="tab-shop">
-        <div class="section-title">Магазин кристалів</div>
+        <div class="section-title">Купити кристали ⭐</div>
         <div class="items-list">
             <div class="item-card">
                 <div class="item-info">
-                    <h4>Пакет кристалів</h4>
-                    <p>Нарахування: 213 🍬 (+43 бонус)</p>
+                    <h4>20 кристалів</h4>
+                    <p>Ціна: 15 зірок ⭐</p>
                 </div>
-                <button class="item-btn" onclick="buyGemsWithStars()">85 ⭐</button>
+                <button class="item-btn gem-btn" onclick="buyGems(20, 15)">Купити</button>
+            </div>
+            <div class="item-card">
+                <div class="item-info">
+                    <h4>50 кристалів</h4>
+                    <p>Ціна: 30 зірок ⭐</p>
+                </div>
+                <button class="item-btn gem-btn" onclick="buyGems(50, 30)">Купити</button>
+            </div>
+            <div class="item-card">
+                <div class="item-info">
+                    <h4>100 кристалів</h4>
+                    <p>Ціна: 50 зірок ⭐</p>
+                </div>
+                <button class="item-btn gem-btn" onclick="buyGems(100, 50)">Купити</button>
             </div>
         </div>
     </div>
@@ -382,28 +397,7 @@
         </div>
     </div>
 
-    <!-- Вкладка 4: Завдання -->
-    <div class="tab-content" id="tab-tasks">
-        <div class="section-title">Щоденні завдання</div>
-        <div class="items-list">
-            <div class="item-card">
-                <div class="item-info">
-                    <h4>Підписатися на Telegram</h4>
-                    <p>Нагорода: +5000 монет, +5 💎</p>
-                </div>
-                <button class="item-btn" id="subBtn" onclick="startTelegramTask()">Виконати</button>
-            </div>
-            <div class="item-card">
-                <div class="item-info">
-                    <h4>Друг натапав 10к монет</h4>
-                    <p id="refProgress">Прогрес: 0 / 10 000</p>
-                </div>
-                <button class="item-btn" id="refBtn" onclick="checkReferralProgress()">Перевірити</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Вкладка 5: Друзі -->
+    <!-- Вкладка 4: Друзі -->
     <div class="tab-content" id="tab-friends">
         <div class="section-title">Реферальна система</div>
         <div class="items-list">
@@ -431,10 +425,6 @@
             <span class="nav-icon">🚀</span>
             <span>Бусти</span>
         </button>
-        <button class="nav-item" onclick="switchTab('tasks', this)">
-            <span class="nav-icon">📋</span>
-            <span>Завдання</span>
-        </button>
         <button class="nav-item" onclick="switchTab('friends', this)">
             <span class="nav-icon">👥</span>
             <span>Друзі</span>
@@ -442,17 +432,11 @@
     </nav>
 
     <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand(); // Розгортаємо міні-додаток на весь екран
-
         let score = Number(localStorage.getItem('tabcoin_score')) || 764;
         let gems = Number(localStorage.getItem('tabcoin_gems')) || 10;
         let energy = Number(localStorage.getItem('tabcoin_energy')) || 1000;
         let maxEnergy = Number(localStorage.getItem('tabcoin_maxEnergy')) || 1000;
         let clickPower = Number(localStorage.getItem('tabcoin_clickPower')) || 1;
-        let taskStarted = localStorage.getItem('tabcoin_taskStarted') === 'true';
-        let telegramTaskDone = localStorage.getItem('tabcoin_tgDone') === 'true';
-        let refTaskDone = localStorage.getItem('tabcoin_refDone') === 'true';
 
         const scoreElement = document.getElementById('score');
         const gemsElement = document.getElementById('gems');
@@ -460,52 +444,22 @@
         const energyFill = document.getElementById('energyFill');
         const clickArea = document.getElementById('clickArea');
 
+        // Ініціалізація Telegram WebApp
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
         function saveGame() {
             localStorage.setItem('tabcoin_score', score);
             localStorage.setItem('tabcoin_gems', gems);
             localStorage.setItem('tabcoin_energy', energy);
             localStorage.setItem('tabcoin_maxEnergy', maxEnergy);
             localStorage.setItem('tabcoin_clickPower', clickPower);
-            localStorage.setItem('tabcoin_taskStarted', taskStarted);
-            localStorage.setItem('tabcoin_tgDone', telegramTaskDone);
-            localStorage.setItem('tabcoin_refDone', refTaskDone);
         }
 
-        updateUI();
-
-        // Функція покупки за Telegram Stars із міні-додатка
-        function buyGemsWithStars() {
-            const userId = tg.initDataUnsafe?.user?.id || 12345;
-
-            // Звертаємось до вашого серверного бота за посиланням на оплату
-            fetch('/create-invoice', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId: userId })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.invoiceLink) {
-                    // Викликаємо системне вікно оплати зірками прямо в додатку
-                    tg.openInvoice(data.invoiceLink, (status) => {
-                        if (status === 'paid') {
-                            gems += 213; // Нараховуємо кристали локально
-                            updateUI();
-                            saveGame();
-                            alert('✅ Оплата успішна! Кристали зараховані.');
-                        } else {
-                            // Оплату скасовано або закрито
-                        }
-                    });
-                } else {
-                    alert('Помилка створення рахунку.');
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                alert('Не вдалося підключитися до сервера.');
-            });
-        }
+        scoreElement.textContent = score;
+        gemsElement.textContent = gems;
+        energyText.textContent = `${energy} / ${maxEnergy}`;
+        energyFill.style.width = `${(energy / maxEnergy) * 100}%`;
 
         clickArea.addEventListener('touchstart', (e) => {
             e.preventDefault();
@@ -532,9 +486,8 @@
         function updateUI() {
             scoreElement.textContent = score;
             gemsElement.textContent = gems;
-            energyText.textContent = `${energy} /${maxEnergy}`;
-            const percentage = (energy / maxEnergy) * 100;
-            energyFill.style.width = `${percentage}%`;
+            energyText.textContent = `${energy} / ${maxEnergy}`;
+            energyFill.style.width = `${(energy / maxEnergy) * 100}%`;
         }
 
         function showFloatingTextAt(clientX, clientY) {
@@ -549,7 +502,7 @@
             popup.style.top = `${y}px`;
 
             clickArea.appendChild(popup);
-            setTimeout(() => { popup.remove(); }, 800);
+            setTimeout(() => popup.remove(), 800);
         }
 
         function switchTab(tabId, element) {
@@ -558,6 +511,33 @@
 
             document.getElementById(`tab-${tabId}`).classList.add('active');
             element.classList.add('active');
+        }
+
+        // Функція для купівлі кристалів через Telegram Stars інвойс
+        function buyGems(gemAmount, starPrice) {
+            // Перевіряємо чи гра запущена в Telegram
+            if (tg && tg.openInvoice) {
+                // На тг-боєвіму сервері має генеруватися інвойс на оплату зірками. 
+                // Для прикладу тут показано виклик або симуляція успішної оплати:
+                
+                // Якщо у тебе на сервері створено інвойс через Bot API (createInvoiceLink), передай сюди посилання:
+                // tg.openInvoice(invoiceLink, (status) => { if(status === 'paid') { ... } });
+
+                // Для тестування прямо в додатку (або якщо бот ще не відправляє інвойс):
+                simulateSuccessfulPurchase(gemAmount, starPrice);
+            } else {
+                // Демо-режим для перевірки поза Telegram
+                if (confirm(`Підтвердити покупку ${gemAmount} кристалів за ${starPrice} зірок ⭐?`)) {
+                    simulateSuccessfulPurchase(gemAmount, starPrice);
+                }
+            }
+        }
+
+        function simulateSuccessfulPurchase(gemAmount, starPrice) {
+            gems += gemAmount;
+            updateUI();
+            saveGame();
+            alert(`успішно! Отримано +${gemAmount} 💎`);
         }
 
         function buyBoost(type, cost) {
@@ -578,47 +558,8 @@
             }
         }
 
-        function startTelegramTask() {
-            window.open('https://t.me/tabcoin_bot1', '_blank');
-            const btn = document.getElementById('subBtn');
-            btn.textContent = 'Перевірити';
-            taskStarted = true;
-            btn.setAttribute('onclick', 'checkTelegramTask()');
-            saveGame();
-        }
-
-        function checkTelegramTask() {
-            if (taskStarted) {
-                score += 5000;
-                gems += 5;
-                telegramTaskDone = true;
-                const btn = document.getElementById('subBtn');
-                btn.textContent = 'Виконано';
-                btn.disabled = true;
-                updateUI();
-                saveGame();
-                alert('Завдання виконано! +5000 монет та +5 💎.');
-            }
-        }
-
-        function checkReferralProgress() {
-            let friendReachedGoal = true; 
-            if (friendReachedGoal) {
-                score += 10000;
-                gems += 10;
-                refTaskDone = true;
-                const btn = document.getElementById('refBtn');
-                btn.textContent = 'Отримано';
-                btn.disabled = true;
-                document.getElementById('refProgress').textContent = 'Виконано: 10 000 / 10 000';
-                updateUI();
-                saveGame();
-                alert('Нагороду за друга отримано!');
-            }
-        }
-
         function inviteFriend() {
-            window.open('https://t.me/share/url?url=https://t.me/tabcoin1_bot&text=Заходь у круту тапалку!', '_blank');
+            window.open('https://t.me/share/url?url=https://t.me/tabcoin1_bot&text=Заходь у круту тапалку та заробляй монети!', '_blank');
         }
     </script>
 </body>
