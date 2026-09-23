@@ -752,14 +752,19 @@
                 saveGame();
                 
                 // Викликаємо стандартне вікно сповіщення Telegram
+               
+                
+                
+                
                 window.Telegram.WebApp.showAlert(`Успішно! Ви придбали +${gemsAmount} 💎 за ${starsPrice} ⭐!`);
             } else {
                 // Якщо раптом відкрито у звичайному браузері
                 gems += gemsAmount;
                 updateVisuals();
                 saveGame();
-                alert(`Успішно зараховано +${gemsAmount} 💎 за ${starsPrice} ⭐!`);
+            } alert(`Успішно зараховано +${gemsAmount} 💎 за ${starsPrice} ⭐!`);
             
+            }
         
 
 
