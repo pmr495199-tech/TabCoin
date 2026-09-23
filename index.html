@@ -462,14 +462,14 @@
                     <h4>Подвійний клік</h4>
                     <p>+1 монета за клік</p>
                 </div>
-                <button class="item-btn" id="buyMulticlickBtn" onclick="buyBoost('multiclick')">Купити (500 🪙)</button>
+                <button class="item-btn" id="buyMulticlickBtn" onclick="buyBoost('multiclick')">Купити</button>
             </div>
             <div class="item-card">
                 <div class="item-info">
                     <h4>Потужне болото</h4>
                     <p>Максимум енергії +500</p>
                 </div>
-                <button class="item-btn" id="buyMaxenergyBtn" onclick="buyBoost('maxenergy')">Купити (500 🪙)</button>
+                <button class="item-btn" id="buyMaxenergyBtn" onclick="buyBoost('maxenergy')">Купити</button>
             </div>
         </div>
     </div>
@@ -564,8 +564,8 @@
     <script>
         let score = Number(localStorage.getItem('tabcoin_score')) || 764;
         let gems = Number(localStorage.getItem('tabcoin_gems')) || 10;
-        let energy = Number(localStorage.getItem('tabcoin_energy')) || 1000;
         let maxEnergy = Number(localStorage.getItem('tabcoin_maxEnergy')) || 1000;
+        let energy = Number(localStorage.getItem('tabcoin_energy')) ?? maxEnergy;
         let clickPower = Number(localStorage.getItem('tabcoin_clickPower')) || 1;
         let level = Number(localStorage.getItem('tabcoin_level')) || 1;
         
@@ -575,6 +575,17 @@
         let taskStarted = localStorage.getItem('tabcoin_taskStarted') === 'true';
         let telegramTaskDone = localStorage.getItem('tabcoin_tgDone') === 'true';
         let refTaskDone = localStorage.getItem('tabcoin_refDone') === 'true';
+
+        // Розрахунок офлайн енергії при завантаженні гри
+        let lastTime = Number(localStorage.getItem('tabcoin_lastTime')) || Date.now();
+        let currentTime = Date.now();
+        let elapsedSeconds = Math.floor((currentTime - lastTime) / 1000);
+
+        if (elapsedSeconds > 0 && energy < maxEnergy) {
+            // Відновлюємо по 3 енергії за секунду
+            let restoredEnergy = elapsedSeconds * 3;
+            energy = Math.min(maxEnergy, energy + restoredEnergy);
+        }
 
         const boostPrices = [500, 700, 1000, 2000, 3000, 5000, 7500, 10000];
 
@@ -592,7 +603,6 @@
             if (boostLevel < boostPrices.length) {
                 return boostPrices[boostLevel];
             }
-            // Якщо купують більше разів, ніж у масиві — ціна додає по 5000 за кожен рівень
             return boostPrices[boostPrices.length - 1] + (boostLevel - boostPrices.length + 1) * 5000;
         }
 
@@ -608,6 +618,7 @@
             localStorage.setItem('tabcoin_taskStarted', taskStarted);
             localStorage.setItem('tabcoin_tgDone', telegramTaskDone);
             localStorage.setItem('tabcoin_refDone', refTaskDone);
+            localStorage.setItem('tabcoin_lastTime', Date.now());
         }
 
         function checkLevelProgression() {
@@ -637,6 +648,7 @@
         }
 
         updateVisuals();
+        saveGame(); // Зберігаємо актуальний час і відновлену енергію одразу при старті
 
         if (telegramTaskDone) {
             const subBtn = document.getElementById('subBtn');
@@ -669,6 +681,7 @@
             saveGame();
         }, { passive: false });
 
+        // Онлайн відновлення енергії (кожну секунду)
         setInterval(() => {
             if (energy < maxEnergy) {
                 energy = Math.min(maxEnergy, energy + 3);
@@ -676,6 +689,11 @@
                 saveGame();
             }
         }, 1000);
+
+        // Оновлення часу під час закриття/згортання сторінки
+        window.addEventListener('beforeunload', () => {
+            saveGame();
+        });
 
         function showFloatingTextAt(clientX, clientY) {
             const rect = clickArea.getBoundingClientRect();
@@ -777,10 +795,10 @@
         }
 
         const coinPrizes = [
-            { text: "🪙 30k", value: 30000, chance: 3 },
-            { text: "🪙 25k", value: 25000, chance: 5 },
-            { text: "🪙 20k", value: 20000, chance: 12 },
-            { text: "🪙 15k", value: 15000, chance: 50 },
+            { text: "👑 30k", value: 30000, chance: 3 },
+            { text: "🔥 25k", value: 25000, chance: 5 },
+            { text: "⭐ 20k", value: 20000, chance: 12 },
+            { text: "💰 15k", value: 15000, chance: 50 },
             { text: "🪙 10k", value: 10000, chance: 60 },
             { text: "🪙 7k", value: 7000, chance: 60 },
             { text: "🪙 5k", value: 5000, chance: 60 }
