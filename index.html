@@ -317,8 +317,8 @@
 
         .wheel-wrapper {
             position: relative;
-            width: 220px;
-            height: 220px;
+            width: 230px;
+            height: 230px;
         }
 
         .wheel {
@@ -340,24 +340,27 @@
             left: 50%;
             transform-origin: 0% 100%;
             display: flex;
-            align-items: flex-start;
-            justify-content: center;
-            padding-top: 15px;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 22px;
             pointer-events: none;
         }
 
         .wheel-sector span {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
             font-size: 11px;
-            font-weight: bold;
-            color: white;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.9);
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.9);
             transform: rotate(90deg);
+            white-space: nowrap;
         }
 
         .wheel-pointer {
             position: absolute;
-            top: -10px;
+            top: -12px;
             left: 50%;
             transform: translateX(-50%);
             width: 0;
@@ -366,6 +369,7 @@
             border-right: 9px solid transparent;
             border-top: 16px solid var(--accent-gold);
             z-index: 10;
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5));
         }
 
         .wheel-center {
@@ -373,8 +377,8 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 36px;
-            height: 36px;
+            width: 38px;
+            height: 38px;
             background: var(--accent-gold);
             border-radius: 50%;
             display: flex;
@@ -746,7 +750,7 @@
             window.open('https://t.me/share/url?url=https://t.me/tabcoin1_bot&text=Заходь у круту тапалку!', '_blank');
         }
 
-        // Налаштування призових секторів і шансів (у відсотках)
+        // Шанси та призи
         const coinPrizes = [
             { value: 5000, chance: 60 },
             { value: 7000, chance: 60 },
@@ -781,6 +785,7 @@
 
                 const sector = document.createElement('div');
                 sector.className = 'wheel-sector';
+                // Центруємо текст всередині кожного сектору на половині його кута
                 sector.style.transform = `rotate(${startAngle + angleStep / 2}deg)`;
                 sector.innerHTML = `<span>${prizeObj.value} ${symbol}</span>`;
                 wheel.appendChild(sector);
@@ -794,7 +799,6 @@
             createWheelSectors('wheelGem', gemPrizes, '💎');
         });
 
-        // Вибір призу на основі заданих шансів (ваг)
         function getWeightedRandomIndex(prizes) {
             const totalWeight = prizes.reduce((sum, item) => sum + item.chance, 0);
             let randomNum = Math.random() * totalWeight;
