@@ -529,14 +529,14 @@
 
         <!-- Кришталева рулетка -->
         <div class="roulette-container" id="roulette-gem">
-            <p style="font-size: 12px; color: var(--text-secondary);">Ціна прокрутки: 2 💎</p>
+            <p style="font-size: 12px; color: var(--text-secondary);">Ціна прокрутки: 15 💎</p>
             <div class="wheel-wrapper">
                 <div class="wheel-pointer"></div>
                 <div class="wheel" id="wheelGem" style="border-color: var(--accent-gem);">
                     <div class="wheel-center" style="background: var(--accent-gem);">💎</div>
                 </div>
             </div>
-            <button class="item-btn" id="spinGemBtn" onclick="spinGemWheel()" style="width: 100%; padding: 10px; font-size: 14px; background: var(--accent-gem); color: #0369a1;">Крутити (2 💎)</button>
+            <button class="item-btn" id="spinGemBtn" onclick="spinGemWheel()" style="width: 100%; padding: 10px; font-size: 14px; background: var(--accent-gem); color: #0369a1;">Крутити (15 💎)</button>
         </div>
     </div>
 
@@ -766,14 +766,14 @@
             }, 3000);
         }
 
-        // Логіка Кришталевої рулетки (Ціна: 2 кристали)
+        // Логіка Кришталевої рулетки (Ціна: 15 кристалів)
         let gemRotation = 0;
         const gemPrizes = [5, 7, 10, 15, 20, 25, 30];
 
         function spinGemWheel() {
-            const cost = 2;
+            const cost = 15;
             if (gems < cost) {
-                alert('Недостатньо кристалів! Потрібно 2 💎');
+                alert('Недостатньо кристалів! Потрібно 15 💎');
                 return;
             }
 
@@ -804,4 +804,3 @@
     </script>
 </body>
 </html>
-                      
