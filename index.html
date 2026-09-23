@@ -742,14 +742,6 @@
             });
         }
 
-        function addTestFriend() {
-            const randomNames = ['Бро з болота', 'Крокодильчик', 'Тапер 999', 'СлємБандит', 'ЧіллПарняга'];
-            const randomName = randomNames[Math.floor(Math.random() * randomNames.length)];
-            
-            const newFriend = {
-                name: randomName,
-                score: Math.floor(Math.random() * 5000) + 500
-            };
 
             friends.push(newFriend);
             
@@ -923,19 +915,19 @@
         }
 
         const coinPrizes = [
-            { text: "👑 30k", value: 30000, chance: 3 },
-            { text: "🔥 25k", value: 25000, chance: 5 },
-            { text: "⭐ 20k", value: 20000, chance: 12 },
-            { text: "💰 15k", value: 15000, chance: 50 },
+            { text: "🪙 30k", value: 30000, chance: 3 },
+            { text: "🪙 25k", value: 25000, chance: 5 },
+            { text: "🪙 20k", value: 20000, chance: 12 },
+            { text: "🪙 15k", value: 15000, chance: 50 },
             { text: "🪙 10k", value: 10000, chance: 60 },
             { text: "🪙 7k", value: 7000, chance: 60 },
             { text: "🪙 5k", value: 5000, chance: 60 }
         ];
 
         const gemPrizes = [
-            { text: "💎 30", value: 30, chance: 3 },
-            { text: "💎 25", value: 25, chance: 5 },
-            { text: "💎 20", value: 20, chance: 12 },
+            { text: "💎 30", value: 30, chance: 10 },
+            { text: "💎 25", value: 25, chance: 20 },
+            { text: "💎 20", value: 20, chance: 35 },
             { text: "💎 15", value: 15, chance: 50 },
             { text: "💎 10", value: 10, chance: 60 },
             { text: "💎 7", value: 7, chance: 60 },
