@@ -45,6 +45,7 @@
             flex-direction: column;
             justify-content: space-between;
             overflow-y: hidden;
+            transition: background-image 0.3s ease;
         }
 
         body::before {
@@ -218,6 +219,7 @@
             max-width: 340px;
             margin-left: auto;
             margin-right: auto;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
         }
 
         .items-list {
@@ -379,7 +381,7 @@
             justify-content: space-around;
             background: var(--panel-bg);
             border-top: 1px solid var(--border-color);
-            padding: 12px 0;
+            padding: 10px 0;
             backdrop-filter: blur(15px);
         }
 
@@ -387,11 +389,11 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
+            gap: 3px;
             background: none;
             border: none;
             color: var(--text-secondary);
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 500;
             cursor: pointer;
             transition: color 0.2s;
@@ -402,7 +404,7 @@
         }
 
         .nav-icon {
-            font-size: 18px;
+            font-size: 16px;
         }
 
         .click-pop {
@@ -428,7 +430,7 @@
         <div class="balances-wrapper">
             <div class="balance-container">
                 <div class="coin-icon">🪙</div>
-                <div class="balance-score" id="score">500</div>
+                <div class="balance-score" id="score">0</div>
             </div>
             <div class="balance-container">
                 <div class="gem-icon">💎</div>
@@ -545,6 +547,19 @@
         </div>
     </div>
 
+    <div class="tab-content" id="tab-exchange">
+        <div class="section-title">Обмін валют</div>
+        <div class="items-list">
+            <div class="item-card">
+                <div class="item-info">
+                    <h4>Монети на Кристали</h4>
+                    <p>500 000 🪙 ➔ 20 💎</p>
+                </div>
+                <button class="item-btn" onclick="exchangeCoinsToGems()">Обміняти</button>
+            </div>
+        </div>
+    </div>
+
     <nav>
         <button class="nav-item active" onclick="switchTab('tap', this)">
             <span class="nav-icon">⚡</span>
@@ -566,22 +581,29 @@
             <span class="nav-icon">🎡</span>
             <span>Рулетка</span>
         </button>
+        <button class="nav-item" onclick="switchTab('exchange', this)">
+            <span class="nav-icon">🔄</span>
+            <span>Обміни</span>
+        </button>
     </nav>
 
     <script>
-        let score = Number(localStorage.getItem('tabcoin_score')) || 764;
-        let gems = Number(localStorage.getItem('tabcoin_gems')) || 10;
+        let score = Number(localStorage.getItem('tabcoin_score')) || 0;
+        let gems = Number(localStorage.getItem('tabcoin_gems')) || 0;
         let maxEnergy = Number(localStorage.getItem('tabcoin_maxEnergy')) || 1000;
-        let energy = Number(localStorage.getItem('tabcoin_energy')) ?? maxEnergy;
+        let energy = Number(localStorage.getItem('tabcoin_energy'));
+        if (isNaN(energy)) energy = maxEnergy;
+        
         let clickPower = Number(localStorage.getItem('tabcoin_clickPower')) || 1;
         let level = Number(localStorage.getItem('tabcoin_level')) || 1;
         
         let multiclickLevel = Number(localStorage.getItem('tabcoin_multiLevel')) || 0;
         let maxenergyLevel = Number(localStorage.getItem('tabcoin_energyLevel')) || 0;
-        
         let regenLevel = Number(localStorage.getItem('tabcoin_regenLevel')) || 0;
+
         const regenValues = [3, 5, 10, 30, 50]; 
         const regenPrices = [10000, 50000, 70000, 100000];
+        const boostPrices = [500, 700, 1000, 2000, 3000, 5000, 7500, 10000];
 
         let taskStarted = localStorage.getItem('tabcoin_taskStarted') === 'true';
         let telegramTaskDone = localStorage.getItem('tabcoin_tgDone') === 'true';
@@ -598,8 +620,6 @@
             let restoredEnergy = elapsedSeconds * currentRegenRate;
             energy = Math.min(maxEnergy, energy + restoredEnergy);
         }
-
-        const boostPrices = [500, 700, 1000, 2000, 3000, 5000, 7500, 10000];
 
         const scoreElement = document.getElementById('score');
         const gemsElement = document.getElementById('gems');
@@ -639,16 +659,16 @@
         function checkLevelProgression() {
             if (score >= 500000 && level < 5) {
                 level = 5;
-                alert('👑 НЕЙМОВІРНО! Ви досягли 500 000 монет і здобули 5-й абсолютний рівень! Ви справжній володар болота!');
+                alert('👑 НЕЙМОВІРНО! Ви досягли 500 000 монет і здобули 5-й абсолютний рівень!');
             } else if (score >= 340000 && score < 500000 && level < 4) {
                 level = 4;
-                alert('🚀 Легендарно! Ви досягли 340 000 монет та перейшли на 4-й рівень! Ваш крокодил досяг максимальної сили!');
+                alert('🚀 Легендарно! Ви досягли 340 000 монет та перейшли на 4-й рівень!');
             } else if (score >= 170000 && score < 340000 && level < 3) {
                 level = 3;
-                alert('🏆 Неймовірно! Ви досягли 170 000 монет та перейшли на 3-й рівень! Крокодил набув епічного вигляду!');
+                alert('🏆 Неймовірно! Ви досягли 170 000 монет та перейшли на 3-й рівень!');
             } else if (score >= 70000 && score < 170000 && level < 2) {
                 level = 2;
-                alert('🎉 Вітаємо! Ви досягли 70 000 монет та перейшли на 2-й рівень! Крокодил змінив одяг!');
+                alert('🎉 Вітаємо! Ви досягли 70 000 монет та перейшли на 2-й рівень!');
             }
             updateVisuals();
         }
@@ -675,7 +695,7 @@
 
             if (level >= 5) {
                 levelBadge.textContent = 'Рівень 5 👑';
-                characterImg.src = '1790165750453.png';
+                characterImg.src = '1790180000000.png';
             } else if (level === 4) {
                 levelBadge.textContent = 'Рівень 4 ⚡';
                 characterImg.src = '1790165750453.png';
@@ -691,8 +711,22 @@
             }
         }
 
+        function exchangeCoinsToGems() {
+            const cost = 500000;
+            const reward = 20;
+
+            if (score >= cost) {
+                score -= cost;
+                gems += reward;
+                updateVisuals();
+                saveGame();
+                alert(`Успішний обмін! Отримано +${reward} 💎`);
+            } else {
+                alert('Недостатньо монет! Потрібно 500 000 🪙');
+            }
+        }
+
         updateVisuals();
-        saveGame();
 
         if (telegramTaskDone) {
             const subBtn = document.getElementById('subBtn');
@@ -725,6 +759,16 @@
             saveGame();
         }, { passive: false });
 
+        clickArea.addEventListener('click', (e) => {
+            if (energy >= energyCostPerClick) {
+                score += clickPower;
+                energy -= energyCostPerClick;
+                showFloatingTextAt(e.clientX, e.clientY);
+            }
+            checkLevelProgression();
+            saveGame();
+        });
+
         setInterval(() => {
             if (energy < maxEnergy) {
                 let currentRegenRate = regenValues[Math.min(regenLevel, regenValues.length - 1)];
@@ -749,11 +793,24 @@
             setTimeout(() => popup.remove(), 800);
         }
 
+        const backgroundMap = {
+            'tap': '1790097907298.png',
+            'boosts': '1790173352123.png',
+            'tasks': '1790173493994.png',
+            'friends': 'grunge-background-with-space-text-image_196038-16934.jpg',
+            'roulette': '1790173514227.png',
+            'exchange': '1790173469292.png'
+        };
+
         function switchTab(tabId, element) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             document.getElementById(`tab-${tabId}`).classList.add('active');
             element.classList.add('active');
+
+            if (backgroundMap[tabId]) {
+                document.body.style.backgroundImage = `url('${backgroundMap[tabId]}')`;
+            }
         }
 
         function switchRoulette(type, element) {
@@ -850,25 +907,27 @@
             window.open('https://t.me/share/url?url=https://t.me/tabcoin1_bot&text=Заходь у круту тапалку!', '_blank');
         }
 
-        const coinPrizes = [
-            { text: "🪙 30k", value: 30000, chance: 3 },
-            { text: "🪙 25k", value: 25000, chance: 5 },
-            { text: "🪙 20k", value: 20000, chance: 12 },
-            { text: "🪙 15k", value: 15000, chance: 50 },
-            { text: "🪙 10k", value: 10000, chance: 60 },
-            { text: "🪙 7k", value: 7000, chance: 60 },
-            { text: "🪙 5k", value: 5000, chance: 60 }
-        ];
+        
+        // Призи для монетної рулетки
+const coinRoulettePrizes = [
+    { text: "30💎", gems: 30, coins: 0, chance: 10 },
+    { text: "25💎", gems: 25, coins: 0, chance: 15 },
+    { text: "20💎", gems: 20, coins: 0, chance: 30 },
+    { text: "15💎", gems: 15, coins: 0, chance: 50 },
+    { text: "10💎", gems: 10, coins: 0, chance: 60 },
+    { text: "5💎",  gems: 5,  coins: 0, chance: 60 }
+];
 
-        const gemPrizes = [
-            { text: "💎 30", value: 30, chance: 3 },
-            { text: "💎 25", value: 25, chance: 5 },
-            { text: "💎 20", value: 20, chance: 12 },
-            { text: "💎 15", value: 15, chance: 50 },
-            { text: "💎 10", value: 10, chance: 60 },
-            { text: "💎 7", value: 7, chance: 60 },
-            { text: "💎 5", value: 5, chance: 60 }
-        ];
+// Призи для кристалевої рулетки
+const gemRoulettePrizes = [
+    { text: "30k 🪙", gems: 0, coins: 30000, chance: 10 },
+    { text: "25k 🪙", gems: 0, coins: 25000, chance: 15 },
+    { text: "20k 🪙", gems: 0, coins: 20000, chance: 30 },
+    { text: "15k 🪙", gems: 0, coins: 15000, chance: 50 },
+    { text: "15k 🪙", gems: 0, coins: 15000, chance: 60 },
+    { text: "7k 🪙",  gems: 0, coins: 7000,  chance: 60 }
+];
+
 
         function buildWheelSVG(wheelId, prizes) {
             const wheelContainer = document.getElementById(wheelId);
@@ -897,7 +956,7 @@
                 const textX = 50 + textRadius * Math.cos(Math.PI * midAngle / 180);
                 const textY = 50 + textRadius * Math.sin(Math.PI * midAngle / 180);
 
-                svgHTML += `<text x="${textX}" y="${textY}" fill="#ffffff" font-size="5.5" font-weight="bold" text-anchor="middle" dominant-baseline="middle" transform="rotate(${midAngle + 90}, ${textX}, ${textY})">${prize.text}</text>`;
+                svgHTML += `<text x="${textX}" y="${textY}" fill="#ffffff" font-size="5" font-weight="bold" text-anchor="middle" dominant-baseline="middle" transform="rotate(${midAngle + 90}, ${textX}, ${textY})">${prize.text}</text>`;
             });
 
             svgHTML += `</svg>`;
@@ -905,8 +964,8 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            buildWheelSVG('wheelCoin', coinPrizes);
-            buildWheelSVG('wheelGem', gemPrizes);
+            buildWheelSVG('wheelCoin', roulettePrizes);
+            buildWheelSVG('wheelGem', roulettePrizes);
         });
 
         function getWeightedRandomIndex(prizes) {
@@ -935,8 +994,8 @@
             const spinBtn = document.getElementById('spinCoinBtn');
             spinBtn.disabled = true;
 
-            const prizeIndex = getWeightedRandomIndex(coinPrizes);
-            const totalItems = coinPrizes.length;
+            const prizeIndex = getWeightedRandomIndex(roulettePrizes);
+            const totalItems = roulettePrizes.length;
             const angleStep = 360 / totalItems;
             
             const targetSectorCenter = prizeIndex * angleStep + angleStep / 2;
@@ -948,10 +1007,13 @@
             document.getElementById('wheelCoin').style.transform = `rotate(${coinRotation}deg)`;
 
             setTimeout(() => {
-                const won = coinPrizes[prizeIndex].value;
-                score += won;
-                alert(`Вітаємо! Ви виграли ${won} монет 🪙!`);
+                const wonCoins = roulettePrizes[prizeIndex].coins;
+                const wonGems = roulettePrizes[prizeIndex].gems;
+                score += wonCoins;
+                gems += wonGems;
+                alert(`Вітаємо! Ви виграли ${wonCoins} 🪙 та ${wonGems} 💎!`);
                 checkLevelProgression();
+                updateVisuals();
                 saveGame();
                 spinBtn.disabled = false;
             }, 4000);
@@ -961,7 +1023,7 @@
         function spinGemWheel() {
             const cost = 15;
             if (gems < cost) {
-                alert('Недостатньо кристалів! Потрібно 15 💎');
+                alert('Недостатня кількість кристалів! Потрібно 15 💎');
                 return;
             }
 
@@ -972,8 +1034,8 @@
             const spinBtn = document.getElementById('spinGemBtn');
             spinBtn.disabled = true;
 
-            const prizeIndex = getWeightedRandomIndex(gemPrizes);
-            const totalItems = gemPrizes.length;
+            const prizeIndex = getWeightedRandomIndex(roulettePrizes);
+            const totalItems = roulettePrizes.length;
             const angleStep = 360 / totalItems;
             
             const targetSectorCenter = prizeIndex * angleStep + angleStep / 2;
@@ -985,9 +1047,12 @@
             document.getElementById('wheelGem').style.transform = `rotate(${gemRotation}deg)`;
 
             setTimeout(() => {
-                const won = gemPrizes[prizeIndex].value;
-                gems += won;
-                alert(`Вітаємо! Ви виграли ${won} кристалів 💎!`);
+                const wonCoins = roulettePrizes[prizeIndex].coins;
+                const wonGems = roulettePrizes[prizeIndex].gems;
+                score += wonCoins;
+                gems += wonGems;
+                alert(`Вітаємо! Ви виграли ${wonCoins} 🪙 та ${wonGems} 💎!`);
+                checkLevelProgression();
                 updateVisuals();
                 saveGame();
                 spinBtn.disabled = false;
@@ -995,4 +1060,4 @@
         }
     </script>
 </body>
-</html>
+    </html>
