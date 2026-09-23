@@ -339,12 +339,6 @@
             box-shadow: 0 0 15px var(--accent-gold-glow);
         }
 
-        .wheel svg {
-            width: 100%;
-            height: 100%;
-            transform: rotate(-90deg);
-        }
-
         .wheel-pointer {
             position: absolute;
             top: -14px;
@@ -528,9 +522,7 @@
             <p style="font-size: 12px; color: var(--text-secondary);">Ціна прокрутки: 7 000 🪙</p>
             <div class="wheel-wrapper">
                 <div class="wheel-pointer"></div>
-                <div class="wheel" id="wheelCoin">
-                    <div class="wheel-center">🪙</div>
-                </div>
+                <div class="wheel" id="wheelCoin"></div>
             </div>
             <button class="item-btn" id="spinCoinBtn" onclick="spinCoinWheel()" style="width: 100%; padding: 10px; font-size: 14px;">Крутити (7 000 🪙)</button>
         </div>
@@ -539,9 +531,7 @@
             <p style="font-size: 12px; color: var(--text-secondary);">Ціна прокрутки: 15 💎</p>
             <div class="wheel-wrapper">
                 <div class="wheel-pointer"></div>
-                <div class="wheel" id="wheelGem" style="border-color: var(--accent-gem);">
-                    <div class="wheel-center" style="background: var(--accent-gem);">💎</div>
-                </div>
+                <div class="wheel" id="wheelGem" style="border-color: var(--accent-gem);"></div>
             </div>
             <button class="item-btn" id="spinGemBtn" onclick="spinGemWheel()" style="width: 100%; padding: 10px; font-size: 14px; background: var(--accent-gem); color: #0369a1;">Крутити (15 💎)</button>
         </div>
@@ -907,7 +897,6 @@
             window.open('https://t.me/share/url?url=https://t.me/tabcoin1_bot&text=Заходь у круту тапалку!', '_blank');
         }
 
-        // Окремі призи для кожної рулетки з твоїми шансами
         const coinRoulettePrizes = [
             { text: "30💎", gems: 30, coins: 0, chance: 0.10 },
             { text: "25💎", gems: 25, coins: 0, chance: 0.15 },
@@ -922,21 +911,21 @@
             { text: "25k 🪙", gems: 0, coins: 25000, chance: 0.15 },
             { text: "20k 🪙", gems: 0, coins: 20000, chance: 0.30 },
             { text: "15k 🪙", gems: 0, coins: 15000, chance: 0.50 },
-            { text: "10k 🪙", gems: 0, coins: 10000, chance: 0.60 },
+            { text: "15k 🪙", gems: 0, coins: 15000, chance: 0.60 },
             { text: "7k 🪙",  gems: 0, coins: 7000,  chance: 0.60 }
-        ];  { text: "5k 🪙",  gems: 0, coins: 5000,  chance: 0.70 }
+        ];
 
         function buildWheelSVG(wheelId, prizes) {
             const wheelContainer = document.getElementById(wheelId);
             const total = prizes.length;
             const angleStep = 360 / total;
 
-            let svgHTML = `<svg viewBox="0 0 100 100">`;
+            let svgHTML = `<svg viewBox="0 0 100 100" style="width: 100%; height: 100%; transform: rotate(-90deg);">`;
             
             prizes.forEach((prize, index) => {
                 const startAngle = index * angleStep;
                 const endAngle = (index + 1) * angleStep;
-                const fillColor = index % 2 === 0 ? '#1e293b' : '#334155';
+                const fillColor = index % 2 === 0 ? 'rgba(30, 41, 59, 0.9)' : 'rgba(51, 65, 85, 0.9)';
                 
                 const x1 = 50 + 50 * Math.cos(Math.PI * startAngle / 180);
                 const y1 = 50 + 50 * Math.sin(Math.PI * startAngle / 180);
@@ -946,18 +935,19 @@
 
                 const pathData = `M 50 50 L ${x1} ${y1} A 50 50 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
 
-                svgHTML += `<path d="${pathData}" fill="${fillColor}" stroke="#0f172a" stroke-width="0.5"/>`;
+                svgHTML += `<path d="${pathData}" fill="${fillColor}" stroke="rgba(255, 255, 255, 0.15)" stroke-width="0.8"/>`;
 
                 const midAngle = startAngle + angleStep / 2;
                 const textRadius = 32;
                 const textX = 50 + textRadius * Math.cos(Math.PI * midAngle / 180);
                 const textY = 50 + textRadius * Math.sin(Math.PI * midAngle / 180);
 
-                svgHTML += `<text x="${textX}" y="${textY}" fill="#ffffff" font-size="5" font-weight="bold" text-anchor="middle" dominant-baseline="middle" transform="rotate(${midAngle + 90}, ${textX}, ${textY})">${prize.text}</text>`;
+                svgHTML += `<text x="${textX}" y="${textY}" fill="#ffffff" font-size="6" font-weight="900" text-anchor="middle" dominant-baseline="middle" transform="rotate(${midAngle + 90}, ${textX}, ${textY})" stroke="#000" stroke-width="0.3">${prize.text}</text>`;
             });
 
             svgHTML += `</svg>`;
-            wheelContainer.innerHTML = `<div class="wheel-center">🎯</div>` + svgHTML;
+            const centerIcon = wheelId === 'wheelCoin' ? '🪙' : '💎';
+            wheelContainer.innerHTML = `<div class="wheel-center">${centerIcon}</div>` + svgHTML;
         }
 
         window.addEventListener('DOMContentLoaded', () => {
