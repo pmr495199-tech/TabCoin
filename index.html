@@ -45,7 +45,6 @@
             flex-direction: column;
             justify-content: space-between;
             overflow-y: hidden;
-            transition: background-image 0.3s ease;
         }
 
         body::before {
@@ -219,7 +218,6 @@
             max-width: 340px;
             margin-left: auto;
             margin-right: auto;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
         }
 
         .items-list {
@@ -381,7 +379,7 @@
             justify-content: space-around;
             background: var(--panel-bg);
             border-top: 1px solid var(--border-color);
-            padding: 10px 0;
+            padding: 12px 0;
             backdrop-filter: blur(15px);
         }
 
@@ -389,11 +387,11 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 3px;
+            gap: 4px;
             background: none;
             border: none;
             color: var(--text-secondary);
-            font-size: 10px;
+            font-size: 11px;
             font-weight: 500;
             cursor: pointer;
             transition: color 0.2s;
@@ -404,7 +402,7 @@
         }
 
         .nav-icon {
-            font-size: 16px;
+            font-size: 18px;
         }
 
         .click-pop {
@@ -564,19 +562,6 @@
         </div>
     </div>
 
-    <div class="tab-content" id="tab-exchange">
-        <div class="section-title">Обмін валют</div>
-        <div class="items-list">
-            <div class="item-card">
-                <div class="item-info">
-                    <h4>Монети на Кристали</h4>
-                    <p>500 000 🪙 ➔ 20 💎</p>
-                </div>
-                <button class="item-btn" onclick="exchangeCoinsToGems()">Обміняти</button>
-            </div>
-        </div>
-    </div>
-
     <nav>
         <button class="nav-item active" onclick="switchTab('tap', this)">
             <span class="nav-icon">⚡</span>
@@ -597,10 +582,6 @@
         <button class="nav-item" onclick="switchTab('roulette', this)">
             <span class="nav-icon">🎡</span>
             <span>Рулетка</span>
-        </button>
-        <button class="nav-item" onclick="switchTab('exchange', this)">
-            <span class="nav-icon">🔄</span>
-            <span>Обміни</span>
         </button>
     </nav>
 
@@ -714,7 +695,7 @@
 
             if (level >= 5) {
                 levelBadge.textContent = 'Рівень 5 👑';
-                characterImg.src = '1790180000000.png';
+                characterImg.src = '1790180000000.png'; // Заміни на свою картинку 5-го рівня
             } else if (level === 4) {
                 levelBadge.textContent = 'Рівень 4 ⚡';
                 characterImg.src = '1790165750453.png';
@@ -782,21 +763,6 @@
             alert(`🎉 Запрошено нового друга: ${randomName}! Отримано +2500 монет і +2 💎`);
         }
 
-        function exchangeCoinsToGems() {
-            const cost = 500000;
-            const reward = 20;
-
-            if (score >= cost) {
-                score -= cost;
-                gems += reward;
-                updateVisuals();
-                saveGame();
-                alert(`Успішний обмін! Отримано +${reward} 💎`);
-            } else {
-                alert('Недостатньо монет! Потрібно 500 000 🪙');
-            }
-        }
-
         updateVisuals();
         saveGame();
 
@@ -855,26 +821,11 @@
             setTimeout(() => popup.remove(), 800);
         }
 
-        // Зміна фону залежно від активної вкладки
-        const backgroundMap = {
-            'tap': '1790097907298.png',
-            'boosts': '1790173352123.png',
-            'tasks': '1790173493994.png',
-            'friends': 'grunge-background-with-space-text-image_196038-16934.jpg',
-            'roulette': '1790173514227.png',
-            'exchange': '1790173469292.png'
-        };
-
         function switchTab(tabId, element) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             document.getElementById(`tab-${tabId}`).classList.add('active');
             element.classList.add('active');
-
-            // Змінюємо фон для конкретної вкладки
-            if (backgroundMap[tabId]) {
-                document.body.style.backgroundImage = `url('${backgroundMap[tabId]}')`;
-            }
         }
 
         function switchRoulette(type, element) {
@@ -972,10 +923,10 @@
         }
 
         const coinPrizes = [
-            { text: "🪙 30k", value: 30000, chance: 3 },
-            { text: "🪙 25k", value: 25000, chance: 5 },
-            { text: "🪙 20k", value: 20000, chance: 12 },
-            { text: "🪙 15k", value: 15000, chance: 50 },
+            { text: "👑 30k", value: 30000, chance: 3 },
+            { text: "🔥 25k", value: 25000, chance: 5 },
+            { text: "⭐ 20k", value: 20000, chance: 12 },
+            { text: "💰 15k", value: 15000, chance: 50 },
             { text: "🪙 10k", value: 10000, chance: 60 },
             { text: "🪙 7k", value: 7000, chance: 60 },
             { text: "🪙 5k", value: 5000, chance: 60 }
@@ -1083,7 +1034,7 @@
         function spinGemWheel() {
             const cost = 15;
             if (gems < cost) {
-                alert('Недостатня кількість кристалів! Потрібно 15 💎');
+                alert('Недостатньо кристалів! Потрібно 15 💎');
                 return;
             }
 
