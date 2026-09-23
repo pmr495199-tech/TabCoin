@@ -579,10 +579,9 @@
         let multiclickLevel = Number(localStorage.getItem('tabcoin_multiLevel')) || 0;
         let maxenergyLevel = Number(localStorage.getItem('tabcoin_energyLevel')) || 0;
         
-        // Рівень і значення відновлення енергії
         let regenLevel = Number(localStorage.getItem('tabcoin_regenLevel')) || 0;
-        const regenValues = [3, 5, 10, 30, 50]; // Рівні: 0 -> 3, 1 -> 5, 2 -> 10, 3 -> 30, 4 -> 50
-        const regenPrices = [10000, 50000, 70000, 100000]; // Ціни для переходу на наступні рівні
+        const regenValues = [3, 5, 10, 30, 50]; 
+        const regenPrices = [10000, 50000, 70000, 100000];
 
         let taskStarted = localStorage.getItem('tabcoin_taskStarted') === 'true';
         let telegramTaskDone = localStorage.getItem('tabcoin_tgDone') === 'true';
@@ -590,7 +589,6 @@
 
         const energyCostPerClick = 5;
 
-        // Розрахунок офлайн енергії з урахуванням поточного рівня відновлення
         let lastTime = Number(localStorage.getItem('tabcoin_lastTime')) || Date.now();
         let currentTime = Date.now();
         let elapsedSeconds = Math.floor((currentTime - lastTime) / 1000);
@@ -639,7 +637,10 @@
         }
 
         function checkLevelProgression() {
-            if (score >= 70000 && level < 2) {
+            if (score >= 170000 && level < 3) {
+                level = 3;
+                alert('🏆 Неймовірно! Ви досягли 170 000 монет та перейшли на 3-й рівень! Крокодил набув епічного вигляду!');
+            } else if (score >= 70000 && score < 170000 && level < 2) {
                 level = 2;
                 alert('🎉 Вітаємо! Ви досягли 70 000 монет та перейшли на 2-й рівень! Крокодил змінив одяг!');
             }
@@ -655,7 +656,6 @@
             buyMulticlickBtn.textContent = `Купити (${getBoostPrice(multiclickLevel)} 🪙)`;
             buyMaxenergyBtn.textContent = `Купити (${getBoostPrice(maxenergyLevel)} 🪙)`;
 
-            // Оновлення кнопки та тексту швидкості відновлення
             let currentRegen = regenValues[Math.min(regenLevel, regenValues.length - 1)];
             if (regenLevel < regenPrices.length) {
                 regenInfo.textContent = `Відновлення: ${currentRegen}/сек (Наступний: ${regenValues[regenLevel+1]}/сек)`;
@@ -667,7 +667,10 @@
                 buyRegenBtn.disabled = true;
             }
 
-            if (level >= 2) {
+            if (level >= 3) {
+                levelBadge.textContent = 'Рівень 3 🌟';
+                characterImg.src = '1790163627383.png';
+            } else if (level === 2) {
                 levelBadge.textContent = 'Рівень 2 👑';
                 characterImg.src = '1790159498394.png';
             } else {
@@ -710,7 +713,6 @@
             saveGame();
         }, { passive: false });
 
-        // Щобсекундне відновлення енергії з урахуванням поточного темпу
         setInterval(() => {
             if (energy < maxEnergy) {
                 let currentRegenRate = regenValues[Math.min(regenLevel, regenValues.length - 1)];
