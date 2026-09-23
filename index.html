@@ -262,6 +262,7 @@
             font-size: 13px;
             cursor: pointer;
             transition: opacity 0.2s;
+            white-space: nowrap;
         }
 
         .item-btn:active {
@@ -459,16 +460,16 @@
             <div class="item-card">
                 <div class="item-info">
                     <h4>Подвійний клік</h4>
-                    <p>+1 монета за клік (Ціна: 500 монет)</p>
+                    <p>+1 монета за клік</p>
                 </div>
-                <button class="item-btn" onclick="buyBoost('multiclick', 500)">Купити</button>
+                <button class="item-btn" id="buyMulticlickBtn" onclick="buyBoost('multiclick')">Купити (500 🪙)</button>
             </div>
             <div class="item-card">
                 <div class="item-info">
                     <h4>Потужне болото</h4>
-                    <p>Максимум енергії +500 (Ціна: 1000 монет)</p>
+                    <p>Максимум енергії +500</p>
                 </div>
-                <button class="item-btn" onclick="buyBoost('maxenergy', 1000)">Купити</button>
+                <button class="item-btn" id="buyMaxenergyBtn" onclick="buyBoost('maxenergy')">Купити (500 🪙)</button>
             </div>
         </div>
     </div>
@@ -567,9 +568,15 @@
         let maxEnergy = Number(localStorage.getItem('tabcoin_maxEnergy')) || 1000;
         let clickPower = Number(localStorage.getItem('tabcoin_clickPower')) || 1;
         let level = Number(localStorage.getItem('tabcoin_level')) || 1;
+        
+        let multiclickLevel = Number(localStorage.getItem('tabcoin_multiLevel')) || 0;
+        let maxenergyLevel = Number(localStorage.getItem('tabcoin_energyLevel')) || 0;
+
         let taskStarted = localStorage.getItem('tabcoin_taskStarted') === 'true';
         let telegramTaskDone = localStorage.getItem('tabcoin_tgDone') === 'true';
         let refTaskDone = localStorage.getItem('tabcoin_refDone') === 'true';
+
+        const boostPrices = [500, 700, 1000, 2000, 3000, 5000, 7500, 10000];
 
         const scoreElement = document.getElementById('score');
         const gemsElement = document.getElementById('gems');
@@ -578,6 +585,16 @@
         const clickArea = document.getElementById('clickArea');
         const levelBadge = document.getElementById('levelBadge');
         const characterImg = document.getElementById('characterImg');
+        const buyMulticlickBtn = document.getElementById('buyMulticlickBtn');
+        const buyMaxenergyBtn = document.getElementById('buyMaxenergyBtn');
+
+        function getBoostPrice(boostLevel) {
+            if (boostLevel < boostPrices.length) {
+                return boostPrices[boostLevel];
+            }
+            // Якщо купують більше разів, ніж у масиві — ціна додає по 5000 за кожен рівень
+            return boostPrices[boostPrices.length - 1] + (boostLevel - boostPrices.length + 1) * 5000;
+        }
 
         function saveGame() {
             localStorage.setItem('tabcoin_score', score);
@@ -586,6 +603,8 @@
             localStorage.setItem('tabcoin_maxEnergy', maxEnergy);
             localStorage.setItem('tabcoin_clickPower', clickPower);
             localStorage.setItem('tabcoin_level', level);
+            localStorage.setItem('tabcoin_multiLevel', multiclickLevel);
+            localStorage.setItem('tabcoin_energyLevel', maxenergyLevel);
             localStorage.setItem('tabcoin_taskStarted', taskStarted);
             localStorage.setItem('tabcoin_tgDone', telegramTaskDone);
             localStorage.setItem('tabcoin_refDone', refTaskDone);
@@ -605,6 +624,9 @@
             energyText.textContent = `${energy} / ${maxEnergy}`;
             energyFill.style.width = `${(energy / maxEnergy) * 100}%`;
             
+            buyMulticlickBtn.textContent = `Купити (${getBoostPrice(multiclickLevel)} 🪙)`;
+            buyMaxenergyBtn.textContent = `Купити (${getBoostPrice(maxenergyLevel)} 🪙)`;
+
             if (level >= 2) {
                 levelBadge.textContent = 'Рівень 2 👑';
                 characterImg.src = '1790159498394.png';
@@ -680,21 +702,32 @@
             element.classList.add('active');
         }
 
-        function buyBoost(type, cost) {
-            if (score >= cost) {
-                score -= cost;
-                if (type === 'multiclick') {
+        function buyBoost(type) {
+            if (type === 'multiclick') {
+                let cost = getBoostPrice(multiclickLevel);
+                if (score >= cost) {
+                    score -= cost;
+                    multiclickLevel++;
                     clickPower += 1;
-                    alert('Буст успішно куплено!');
-                } else if (type === 'maxenergy') {
+                    alert('Буст кліка успішно куплено!');
+                    checkLevelProgression();
+                    saveGame();
+                } else {
+                    alert('Недостатньо монет!');
+                }
+            } else if (type === 'maxenergy') {
+                let cost = getBoostPrice(maxenergyLevel);
+                if (score >= cost) {
+                    score -= cost;
+                    maxenergyLevel++;
                     maxEnergy += 500;
                     energy = maxEnergy;
                     alert('Максимум енергії збільшено!');
+                    checkLevelProgression();
+                    saveGame();
+                } else {
+                    alert('Недостатньо монет!');
                 }
-                checkLevelProgression();
-                saveGame();
-            } else {
-                alert('Недостатньо монет!');
             }
         }
 
