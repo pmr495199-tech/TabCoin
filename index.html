@@ -511,6 +511,23 @@
                 </div>
                 <button class="item-btn" onclick="inviteFriend()">Поділитися</button>
             </div>
+            
+            <div class="item-card" style="border-color: rgba(56, 189, 248, 0.4);">
+                <div class="item-info">
+                    <h4>Тест реферала</h4>
+                    <p>Додати тестового друга</p>
+                </div>
+                <button class="item-btn" style="background: var(--accent-gem); color: #0369a1;" onclick="addTestFriend()">Додати</button>
+            </div>
+        </div>
+
+        <div class="section-title" style="margin-top: 15px;">Мої друзі (<span id="friendsCount">0</span>)</div>
+        <div class="items-list" id="friendsListContainer">
+            <div class="item-card" id="noFriendsText">
+                <div class="item-info" style="width: 100%; text-align: center; color: var(--text-secondary);">
+                    <p>Ви ще нікого не запросили</p>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -587,6 +604,8 @@
         let telegramTaskDone = localStorage.getItem('tabcoin_tgDone') === 'true';
         let refTaskDone = localStorage.getItem('tabcoin_refDone') === 'true';
 
+        let friends = JSON.parse(localStorage.getItem('tabcoin_friends')) || [];
+
         const energyCostPerClick = 5;
 
         let lastTime = Number(localStorage.getItem('tabcoin_lastTime')) || Date.now();
@@ -633,6 +652,7 @@
             localStorage.setItem('tabcoin_taskStarted', taskStarted);
             localStorage.setItem('tabcoin_tgDone', telegramTaskDone);
             localStorage.setItem('tabcoin_refDone', refTaskDone);
+            localStorage.setItem('tabcoin_friends', JSON.stringify(friends));
             localStorage.setItem('tabcoin_lastTime', Date.now());
         }
 
@@ -675,7 +695,7 @@
 
             if (level >= 5) {
                 levelBadge.textContent = 'Рівень 5 👑';
-                characterImg.src = '1790166306471.png';
+                characterImg.src = '1790180000000.png'; // Заміни на свою картинку 5-го рівня
             } else if (level === 4) {
                 levelBadge.textContent = 'Рівень 4 ⚡';
                 characterImg.src = '1790165750453.png';
@@ -689,6 +709,58 @@
                 levelBadge.textContent = 'Рівень 1';
                 characterImg.src = '1790090929041.png';
             }
+        }
+
+        function updateFriendsUI() {
+            const container = document.getElementById('friendsListContainer');
+            const countElement = document.getElementById('friendsCount');
+            
+            countElement.textContent = friends.length;
+
+            if (friends.length === 0) {
+                container.innerHTML = `
+                    <div class="item-card" id="noFriendsText">
+                        <div class="item-info" style="width: 100%; text-align: center; color: var(--text-secondary);">
+                            <p>Ви ще нікого не запросили</p>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '';
+            friends.forEach((friend) => {
+                container.innerHTML += `
+                    <div class="item-card">
+                        <div class="item-info">
+                            <h4>${friend.name}</h4>
+                            <p>Натапано: ${friend.score} 🪙</p>
+                        </div>
+                        <span style="font-size: 13px; color: var(--accent-gold); font-weight: 700;">+2500 🪙</span>
+                    </div>
+                `;
+            });
+        }
+
+        function addTestFriend() {
+            const randomNames = ['Бро з болота', 'Крокодильчик', 'Тапер 999', 'СлємБандит', 'ЧіллПарняга'];
+            const randomName = randomNames[Math.floor(Math.random() * randomNames.length)];
+            
+            const newFriend = {
+                name: randomName,
+                score: Math.floor(Math.random() * 5000) + 500
+            };
+
+            friends.push(newFriend);
+            
+            score += 2500;
+            gems += 2;
+            
+            saveGame();
+            updateVisuals();
+            updateFriendsUI();
+            
+            alert(`🎉 Запрошено нового друга: ${randomName}! Отримано +2500 монет і +2 💎`);
         }
 
         updateVisuals();
@@ -907,6 +979,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             buildWheelSVG('wheelCoin', coinPrizes);
             buildWheelSVG('wheelGem', gemPrizes);
+            updateFriendsUI();
         });
 
         function getWeightedRandomIndex(prizes) {
