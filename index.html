@@ -64,12 +64,12 @@
         }
 
         header {
-            text-align: center;
-            padding: 15px 0 5px 0;
+            padding: 10px 15px 5px 15px;
         }
 
         .game-title {
-            font-size: 14px;
+            text-align: center;
+            font-size: 13px;
             font-weight: 600;
             letter-spacing: 2px;
             color: var(--text-secondary);
@@ -79,49 +79,50 @@
 
         .balances-wrapper {
             display: flex;
-            justify-content: center;
-            gap: 15px;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
         }
 
         .balance-container {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 8px;
+            gap: 6px;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            padding: 4px 10px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
         }
 
         .coin-icon {
-            width: 32px;
-            height: 32px;
+            width: 26px;
+            height: 26px;
             background: var(--accent-gold);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            font-size: 18px;
-            color: #78350f;
-            box-shadow: 0 0 15px var(--accent-gold-glow);
+            font-size: 14px;
+            box-shadow: 0 0 10px var(--accent-gold-glow);
         }
 
         .gem-icon {
-            width: 32px;
-            height: 32px;
+            width: 26px;
+            height: 26px;
             background: var(--accent-gem);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            font-size: 18px;
-            color: #0369a1;
-            box-shadow: 0 0 15px var(--accent-gem-glow);
+            font-size: 14px;
+            box-shadow: 0 0 10px var(--accent-gem-glow);
         }
 
         .balance-score {
-            font-size: 28px;
+            font-size: 18px;
             font-weight: 800;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
         }
 
         .tab-content {
@@ -329,12 +330,12 @@
     <header>
         <div class="game-title">TabCoin Mining</div>
         <div class="balances-wrapper">
-            <!-- Монети -->
+            <!-- Монети (Зліва) -->
             <div class="balance-container">
                 <div class="coin-icon">🪙</div>
                 <div class="balance-score" id="score">764</div>
             </div>
-            <!-- Кристали (Нова валюта) -->
+            <!-- Кристали (Справа у кружечку) -->
             <div class="balance-container">
                 <div class="gem-icon">💎</div>
                 <div class="balance-score" id="gems">10</div>
@@ -437,7 +438,7 @@
 
     <script>
         let score = Number(localStorage.getItem('tabcoin_score')) || 764;
-        let gems = Number(localStorage.getItem('tabcoin_gems')) || 10; // Нова валюта
+        let gems = Number(localStorage.getItem('tabcoin_gems')) || 10;
         let energy = Number(localStorage.getItem('tabcoin_energy')) || 1000;
         let maxEnergy = Number(localStorage.getItem('tabcoin_maxEnergy')) || 1000;
         let clickPower = Number(localStorage.getItem('tabcoin_clickPower')) || 1;
@@ -577,7 +578,7 @@
         function checkTelegramTask() {
             if (taskStarted) {
                 score += 5000;
-                gems += 5; // Нагорода кристалами за завдання
+                gems += 5;
                 telegramTaskDone = true;
                 const btn = document.getElementById('subBtn');
                 btn.textContent = 'Виконано';
@@ -593,7 +594,7 @@
 
             if (friendReachedGoal) {
                 score += 10000;
-                gems += 10; // Кристали за реферала
+                gems += 10;
                 refTaskDone = true;
                 const btn = document.getElementById('refBtn');
                 btn.textContent = 'Отримано';
