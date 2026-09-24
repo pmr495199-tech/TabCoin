@@ -476,7 +476,6 @@
                 <div class="coin-icon">🪙</div>
                 <div class="balance-score" id="score">0</div>
             </div>
-            <!-- Додано знак «+» біля кристалів для зрозумілості -->
             <div class="balance-container gem-container-clickable" onclick="openGemShop()">
                 <div class="gem-icon">💎+</div>
                 <div class="balance-score" id="gems">0</div>
@@ -802,11 +801,15 @@
         }
 
         function buyGemsWithStars(gemAmount, starsCost) {
-            // Тут у майбутньому можна підключити Telegram WebApp API для оплати зірками (window.Telegram.WebApp.openInvoice)
-            gems += gemAmount;
-            updateVisuals();
-            saveGame();
-            alert(`Успішна покупка за ${starsCost} ⭐! Отримано +${gemAmount} 💎`);
+            // Перенаправлення у чат з ботом для оформлення покупки за зірки
+            const botUsername = "tabcoin1_bot";
+            const deepLink = `https://t.me/${botUsername}?start=buy_${gemAmount}`;
+            
+            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openTelegramLink) {
+                window.Telegram.WebApp.openTelegramLink(deepLink);
+            } else {
+                window.open(deepLink, '_blank');
+            }
             closeGemShop();
         }
 
