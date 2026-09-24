@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>TabCoin</title>
-    <!-- Підключаємо офіційний Telegram WebApp SDK для роботи зі Зірками -->
+    <!-- Підключаємо офіційний Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -551,27 +551,6 @@
         </div>
     </div>
 
-    <!-- Нова вкладка Магазин (Донат за зірки) -->
-    <div class="tab-content" id="tab-shop">
-        <div class="section-title">Магазин зірок ⭐</div>
-        <div class="items-list">
-            <div class="item-card">
-                <div class="item-info">
-                    <h4>Мішок кристалів</h4>
-                    <p>+100 💎 на баланс</p>
-                </div>
-                <button class="item-btn" onclick="buyWithStars(100, 50)">50 ⭐</button>
-            </div>
-            <div class="item-card">
-                <div class="item-info">
-                    <h4>Скеля кристалів</h4>
-                    <p>+500 💎 на баланс</p>
-                </div>
-                <button class="item-btn" onclick="buyWithStars(500, 200)">200 ⭐</button>
-            </div>
-        </div>
-    </div>
-
     <nav>
         <button class="nav-item active" onclick="switchTab('tap', this)">
             <span class="nav-icon">⚡</span>
@@ -596,10 +575,6 @@
         <button class="nav-item" onclick="switchTab('exchange', this)">
             <span class="nav-icon">🔄</span>
             <span>Обміни</span>
-        </button>
-        <button class="nav-item" onclick="switchTab('shop', this)">
-            <span class="nav-icon">⭐</span>
-            <span>Магазин</span>
         </button>
     </nav>
 
@@ -739,36 +714,6 @@
                 alert(`Успішний обмін! Отримано +${reward} 💎`);
             } else {
                 alert('Недостатньо монет! Потрібно 500 000 🪙');
-            }
-        }
-                
-                fetch(`https://твій-сервер.com/create-invoice?gems=${gemsAmount}&stars=${starsPrice}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.invoiceLink) {
-                            tg.openInvoice(data.invoiceLink, (status) => {
-                                if (status === 'paid') {
-                                    alert(`Оплата успішна! Отримано +${gemsAmount} 💎`);
-                                    gems += gemsAmount;
-                                    updateVisuals();
-                                    saveGame();
-                                } else {
-                                    alert('Оплату було скасовано.');
-                                }
-                            });
-                        }
-                    })
-                    .catch(err => {
-                        console.log('Помилка сервера:', err);
-                        if (confirm(`[Тест] Симулювати успішну покупку ${gemsAmount} 💎 за ${starsPrice} ⭐?`)) {
-                            gems += gemsAmount;
-                            updateVisuals();
-                            saveGame();
-                            alert(`Отримано +${gemsAmount} 💎!`);
-                        }
-                    });
-            } else {
-                alert('Донат за зірки доступний лише всередині Telegram!');
             }
         }
 
