@@ -741,10 +741,6 @@
                 alert('Недостатньо монет! Потрібно 500 000 🪙');
             }
         }
-
-        function buyWithStars(gemsAmount, starsPrice) {
-            if (window.Telegram && window.Telegram.WebApp) {
-                const tg = window.Telegram.WebApp;
                 
                 fetch(`https://твій-сервер.com/create-invoice?gems=${gemsAmount}&stars=${starsPrice}`)
                     .then(response => response.json())
