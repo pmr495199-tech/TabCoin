@@ -483,7 +483,7 @@
         </div>
     </div>
 
-    <!-- Вкладка Магазину (Покупка за зірки Telegram Stars) -->
+    <!-- Вкладка Магазину (Перехід у бота для оплати зірками) -->
     <div class="tab-content" id="tab-shop">
         <div class="section-title">Магазин Зірок ⭐</div>
         <div class="items-list">
@@ -780,40 +780,17 @@
             }
         }
 
-        // Функція виклику інвойсу Telegram Stars через Бекенд / WebApp
+        // Перенаправлення користувача до бота @tabcoin1_bot для виклику інвойсу зірок
         function buyGemsInvoice(gemAmount, starsPrice) {
-            // У реальному додатку тут надсилається запит на твій сервер (бекend), 
-            // який створює інвойс через бот (@tabcoin1_bot) за допомогою команди sendInvoice (з валютою XTR).
-            // Нижче приклад взаємодії з Telegram WebApp для відкриття посилання рахунку:
-            
-            fetch(`https://твій-бекend-сервер.com/create-invoice?amount=${gemAmount}&stars=${starsPrice}&user=${tg.initDataUnsafe?.user?.id || 0}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.invoiceUrl) {
-                        tg.openInvoice(data.invoiceUrl, (status) => {
-                            if (status === 'paid') {
-                                gems += gemAmount;
-                                updateVisuals();
-                                saveGame();
-                                alert(`Оплата успішна! Вам зараховано +${gemAmount} 💎`);
-                            } else {
-                                alert('Оплату було скасовано або сталася помилка.');
-                            }
-                        });
-                    } else {
-                        // Демо-режим для перевірки без підключеного сервера:
-                        alert(`[Демо] Запит на покупку ${gemAmount} 💎 за ${starsPrice} ⭐ відправлено до бота!`);
-                    }
-                })
-                .catch(err => {
-                    // Якщо бекенд ще не піднято локально, імітуємо успішну покупку для тесту:
-                    if (confirm(`Підтвердити тестову покупку ${gemAmount} 💎 за ${starsPrice} ⭐?`)) {
-                        gems += gemAmount;
-                        updateVisuals();
-                        saveGame();
-                        alert(`Успішно додано +${gemAmount} 💎 до балансу!`);
-                    }
-                });
+            const botUsername = "tabcoin1_bot"; 
+            const payload = `buy_${gemAmount}_gems_${starsPrice}_stars`;
+            const invoiceUrl = `https://t.me/${botUsername}?start=${payload}`;
+
+            if (tg.openTelegramLink) {
+                tg.openTelegramLink(invoiceUrl);
+            } else {
+                window.open(invoiceUrl, '_blank');
+            }
         }
 
         updateVisuals();
