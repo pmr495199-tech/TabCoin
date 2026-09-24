@@ -95,6 +95,15 @@
             backdrop-filter: blur(10px);
         }
 
+        /* Клікабельні кристали */
+        .gem-container-clickable {
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+        .gem-container-clickable:active {
+            transform: scale(0.95);
+        }
+
         .coin-icon, .gem-icon {
             width: 26px;
             height: 26px;
@@ -369,6 +378,48 @@
             z-index: 5;
         }
 
+        /* Модальне вікно магазину кристалів */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 20px;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-content {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 340px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            backdrop-filter: blur(15px);
+            text-align: center;
+        }
+        .modal-close-btn {
+            background: #475569;
+            color: var(--text-white);
+            border: none;
+            padding: 10px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
         nav {
             display: flex;
             justify-content: space-around;
@@ -425,7 +476,8 @@
                 <div class="coin-icon">🪙</div>
                 <div class="balance-score" id="score">0</div>
             </div>
-            <div class="balance-container">
+            <!-- Клікабельний блок кристалів -->
+            <div class="balance-container gem-container-clickable" onclick="openGemShop()">
                 <div class="gem-icon">💎</div>
                 <div class="balance-score" id="gems">0</div>
             </div>
@@ -546,6 +598,31 @@
                 </div>
                 <button class="item-btn" onclick="exchangeCoinsToGems()">Обміняти</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Модальне вікно магазину кристалів -->
+    <div class="modal-overlay" id="gemShopModal">
+        <div class="modal-content">
+            <div class="section-title" style="margin: 0 auto;">Магазин Кристалів</div>
+            <p style="font-size: 13px; color: var(--text-secondary);">Придбайте кристали за монети для швидкого прогресу!</p>
+            <div class="items-list" style="max-height: none;">
+                <div class="item-card">
+                    <div class="item-info" style="text-align: left;">
+                        <h4>Заквітлий пакет</h4>
+                        <p>+10 💎</p>
+                    </div>
+                    <button class="item-btn" onclick="buyGemsPack(10, 250000)">250k 🪙</button>
+                </div>
+                <div class="item-card">
+                    <div class="item-info" style="text-align: left;">
+                        <h4>Скарбниця болота</h4>
+                        <p>+30 💎</p>
+                    </div>
+                    <button class="item-btn" onclick="buyGemsPack(30, 650000)">650k 🪙</button>
+                </div>
+            </div>
+            <button class="modal-close-btn" onclick="closeGemShop()">Закрити</button>
         </div>
     </div>
 
@@ -712,6 +789,28 @@
                 alert(`Успішний обмін! Отримано +${reward} 💎`);
             } else {
                 alert('Недостатньо монет! Потрібно 500 000 🪙');
+            }
+        }
+
+        // Функції для магазину кристалів у шапці
+        function openGemShop() {
+            document.getElementById('gemShopModal').classList.add('active');
+        }
+
+        function closeGemShop() {
+            document.getElementById('gemShopModal').classList.remove('active');
+        }
+
+        function buyGemsPack(gemAmount, coinCost) {
+            if (score >= coinCost) {
+                score -= coinCost;
+                gems += gemAmount;
+                updateVisuals();
+                saveGame();
+                alert(`Успішна покупка! Отримано +${gemAmount} 💎`);
+                closeGemShop();
+            } else {
+                alert('Недостатньо монет для покупки кристалів!');
             }
         }
 
