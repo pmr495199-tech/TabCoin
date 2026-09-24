@@ -3,381 +3,1121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TabCoin Clicker</title>
+    <title>TabCoin</title>
+    <!-- Підключаємо офіційний Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        :root {
+            --bg-dark: #0f172a;
+            --accent-gold: #fbbf24;
+            --accent-gold-glow: rgba(251, 191, 36, 0.4);
+            --accent-gem: #38bdf8;
+            --accent-gem-glow: rgba(56, 189, 248, 0.4);
+            --text-white: #ffffff;
+            --text-secondary: #94a3b8;
+            --panel-bg: rgba(15, 23, 42, 0.85);
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
             user-select: none;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        }
-        body {
-            background-color: #0f172a;
-            color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-        }
-        .app-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            max-width: 480px;
-            width: 100%;
-            margin: 0 auto;
-            position: relative;
-        }
-        .content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            padding-bottom: 90px;
-        }
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-        }
-        
-        /* Статистика зверху */
-        .header-stats {
-            display: flex;
-            justify-content: space-around;
-            background: #1e293b;
-            padding: 15px;
-            border-radius: 16px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-        }
-        .stat-item {
-            text-align: center;
-        }
-        .stat-value {
-            font-size: 18px;
-            font-weight: bold;
-            color: #38bdf8;
-        }
-        .stat-label {
-            font-size: 12px;
-            color: #94a3b8;
-            margin-top: 4px;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        /* Головний клікер */
-        .clicker-section {
+        html, body {
+            width: 100%;
+            max-width: 100vw;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body {
+            background-image: url('1790097907298.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: var(--text-white);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            height: 100vh;
             display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow-y: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 0;
+        }
+
+        header, .tab-content, nav {
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            padding: 10px 15px 5px 15px;
+        }
+
+        .game-title {
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .balances-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .balance-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            padding: 4px 10px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .coin-icon, .gem-icon {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .coin-icon {
+            background: var(--accent-gold);
+            box-shadow: 0 0 10px var(--accent-gold-glow);
+        }
+
+        .gem-icon {
+            background: var(--accent-gem);
+            box-shadow: 0 0 10px var(--accent-gem-glow);
+        }
+
+        .balance-score {
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        .level-badge {
+            text-align: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--accent-gold);
+            margin-top: 5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .tab-content {
+            flex: 1;
+            display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100%;
-            text-align: center;
+            gap: 15px;
+            padding: 0 20px;
+            overflow-y: auto;
         }
-        .coin-display {
-            font-size: 36px;
-            font-weight: 800;
-            margin-bottom: 30px;
-            color: #facc15;
+
+        .tab-content.active {
+            display: flex;
         }
-        .click-btn {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            background: radial-gradient(circle, #fde047 0%, #eab308 100%);
-            border: none;
-            box-shadow: 0 10px 25px rgba(234, 179, 8, 0.4);
+
+        .character-wrapper {
+            position: relative;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 60px;
             transition: transform 0.1s ease;
+            touch-action: none;
         }
-        .click-btn:active {
-            transform: scale(0.92);
+
+        .character-wrapper:active {
+            transform: scale(0.95);
         }
+
+        .character-img {
+            width: 320px;
+            height: 320px;
+            object-fit: contain;
+            transform: scale(1.3);
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.6));
+            pointer-events: none;
+        }
+
+        .energy-section {
+            width: 100%;
+            max-width: 320px;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            padding: 12px 16px;
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        .energy-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .energy-title {
+            color: var(--accent-gold);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
         .energy-bar-container {
             width: 100%;
-            background: #1e293b;
-            border-radius: 10px;
-            height: 14px;
-            margin-top: 30px;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
             overflow: hidden;
-            padding: 2px;
         }
-        .energy-bar {
+
+        .energy-bar-fill {
             height: 100%;
-            background: #38bdf8;
-            border-radius: 8px;
+            background: linear-gradient(90deg, #f59e0b, #fbbf24);
+            border-radius: 5px;
             width: 100%;
             transition: width 0.2s ease;
         }
-        .energy-text {
-            font-size: 14px;
-            color: #94a3b8;
-            margin-top: 8px;
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--accent-gold);
+            align-self: flex-start;
+            max-width: 340px;
+            margin-left: auto;
+            margin-right: auto;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
         }
 
-        /* Картки завдань / прокачки */
+        .items-list {
+            width: 100%;
+            max-width: 340px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 55vh;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
         .item-card {
-            background: #1e293b;
-            border: 2px solid #334155;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
             border-radius: 14px;
-            padding: 15px;
-            margin-bottom: 12px;
+            padding: 12px 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-        }
-        .item-info h4 {
-            font-size: 16px;
-            margin-bottom: 4px;
-        }
-        .item-info p {
-            font-size: 13px;
-            color: #94a3b8;
-        }
-        .item-btn {
-            background: #38bdf8;
-            color: #0f172a;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
+            backdrop-filter: blur(10px);
         }
 
-        /* Нижня панель навігації */
-        .nav-bar {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 75px;
-            background: #1e293b;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            border-top: 1px solid #334155;
-            max-width: 480px;
-            margin: 0 auto;
+        .item-info h4 {
+            font-size: 15px;
+            margin-bottom: 4px;
         }
-        .nav-item {
-            background: none;
+
+        .item-info p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .item-btn {
+            background: var(--accent-gold);
+            color: #78350f;
             border: none;
-            color: #94a3b8;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-weight: 700;
             font-size: 13px;
             cursor: pointer;
+            transition: opacity 0.2s;
+            white-space: nowrap;
+        }
+
+        .item-btn.gem-btn {
+            background: var(--accent-gem);
+            color: #0369a1;
+        }
+
+        .item-btn:active {
+            opacity: 0.8;
+        }
+
+        .item-btn:disabled {
+            background: #475569;
+            color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .roulette-switcher {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+            max-width: 340px;
+        }
+
+        .roulette-switch-btn {
+            flex: 1;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 8px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .roulette-switch-btn.active {
+            background: var(--accent-gold);
+            color: #78350f;
+            border-color: var(--accent-gold);
+        }
+
+        .roulette-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 340px;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+
+        .roulette-container.active {
+            display: flex;
+        }
+
+        .wheel-wrapper {
+            position: relative;
+            width: 210px;
+            height: 210px;
+        }
+
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 4px solid var(--accent-gold);
+            position: relative;
+            transition: transform 4s cubic-bezier(0.15, 0.85, 0.15, 1);
+            overflow: hidden;
+            box-shadow: 0 0 15px var(--accent-gold-glow);
+        }
+
+        .wheel-pointer {
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 18px solid var(--accent-gold);
+            z-index: 10;
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.6));
+        }
+
+        .wheel-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 38px;
+            height: 38px;
+            background: var(--accent-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            z-index: 5;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-around;
+            background: var(--panel-bg);
+            border-top: 1px solid var(--border-color);
+            padding: 8px 0;
+            backdrop-filter: blur(15px);
+        }
+
+        .nav-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
-            flex: 1;
+            gap: 2px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 9px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.2s;
         }
+
         .nav-item.active {
-            color: #38bdf8;
+            color: var(--accent-gold);
         }
+
         .nav-icon {
-            font-size: 20px;
+            font-size: 15px;
+        }
+
+        .click-pop {
+            position: absolute;
+            font-weight: bold;
+            font-size: 24px;
+            color: var(--accent-gold);
+            animation: floatUp 0.8s ease-out forwards;
+            pointer-events: none;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-80px) scale(1.3); }
         }
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <div class="content">
-        
-        <!-- ВКЛАДКА 1: КЛІКЕР -->
-        <div id="tab-clicker" class="tab-content active">
-            <div class="header-stats">
-                <div class="stat-item">
-                    <div class="stat-value" id="ui-level">1</div>
-                    <div class="stat-label">Рівень</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="ui-gems">0</div>
-                    <div class="stat-label">Кристали</div>
-                </div>
+    <header>
+        <div class="game-title">TabCoin Mining</div>
+        <div class="balances-wrapper">
+            <div class="balance-container">
+                <div class="coin-icon">🪙</div>
+                <div class="balance-score" id="score">0</div>
             </div>
-
-            <div class="clicker-section">
-                <div class="coin-display"><span id="ui-score">0</span> 🪙</div>
-                <button class="click-btn" id="click-btn" onclick="handleClick(event)">🪙</button>
-                
-                <div style="width: 100%; margin-top: 20px;">
-                    <div class="energy-bar-container">
-                        <div class="energy-bar" id="ui-energy-bar"></div>
-                    </div>
-                    <div class="energy-text"><span id="ui-energy">1000</span> / <span id="ui-max-energy">1000</span></div>
-                </div>
+            <div class="balance-container">
+                <div class="gem-icon">💎</div>
+                <div class="balance-score" id="gems">0</div>
             </div>
         </div>
+        <div class="level-badge" id="levelBadge">Рівень 1</div>
+    </header>
 
-        <!-- ВКЛАДКА 2: ПОКРАЩЕННЯ -->
-        <div id="tab-upgrades" class="tab-content">
-            <h2 style="margin-bottom: 15px;">Прокачка</h2>
+    <div class="tab-content active" id="tab-tap">
+        <div class="character-wrapper" id="clickArea">
+            <img src="1790090929041.png" alt="Крокодил" class="character-img" id="characterImg">
+        </div>
+
+        <div class="energy-section">
+            <div class="energy-info">
+                <span class="energy-title">⚡ Енергія</span>
+                <span id="energyText">1000 / 1000</span>
+            </div>
+            <div class="energy-bar-container">
+                <div class="energy-bar-fill" id="energyFill"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-content" id="tab-boosts">
+        <div class="section-title">Покращення</div>
+        <div class="items-list">
             <div class="item-card">
                 <div class="item-info">
-                    <h4>Сила кліку</h4>
-                    <p>+1 монета за клік (Ціна: 50)</p>
+                    <h4>Подвійний клік</h4>
+                    <p>+1 монета за клік</p>
                 </div>
-                <button class="item-btn" onclick="buyUpgrade('click')">Купити</button>
+                <button class="item-btn" id="buyMulticlickBtn" onclick="buyBoost('multiclick')">Купити</button>
+            </div>
+            <div class="item-card">
+                <div class="item-info">
+                    <h4>Потужне болото</h4>
+                    <p>Максимум енергії +500</p>
+                </div>
+                <button class="item-btn" id="buyMaxenergyBtn" onclick="buyBoost('maxenergy')">Купити</button>
+            </div>
+            <div class="item-card">
+                <div class="item-info">
+                    <h4>Швидкість відновлення</h4>
+                    <p id="regenInfo">Відновлення: 3/сек</p>
+                </div>
+                <button class="item-btn" id="buyRegenBtn" onclick="buyBoost('regen')">Купити</button>
             </div>
         </div>
-
-        <!-- ВКЛАДКА 3: ТЕСТОВЕ КЕРУВАННЯ (Скидання / Повернення) -->
-        <div id="tab-admin" class="tab-content">
-            <h2 style="margin-bottom: 15px;">Тест: Скидання даних</h2>
-            <p style="color: #94a3b8; font-size: 14px; margin-bottom: 20px;">
-                Використовуйте ці кнопки прямо з телефона, щоб протестувати обнулення та відновлення.
-            </p>
-
-            <div class="item-card" style="border-color: #ef4444;">
-                <div class="item-info">
-                    <h4>🧪 Скинути все</h4>
-                    <p>Обнулити баланс і рівень до нуля</p>
-                </div>
-                <button class="item-btn" style="background: #ef4444; color: white;" onclick="testResetToZero()">Скинути</button>
-            </div>
-
-            <div class="item-card" style="border-color: #22c55e;">
-                <div class="item-info">
-                    <h4>🧪 Повернути прогрес</h4>
-                    <p>Вписати свої цифри назад</p>
-                </div>
-                <button class="item-btn" style="background: #22c55e; color: white;" onclick="testRestoreProgress()">Повернути</button>
-            </div>
-        </div>
-
     </div>
 
-    <!-- НИЖНЯ ПАНЕЛЬ НАВІГАЦІЇ -->
-    <div class="nav-bar">
-        <button class="nav-item active" onclick="switchTab('clicker', this)">
-            <span class="nav-icon">🪙</span>
-            <span>Клікер</span>
-        </button>
-        <button class="nav-item" onclick="switchTab('upgrades', this)">
+    <div class="tab-content" id="tab-shop">
+        <div class="section-title">Магазин Зірок ⭐</div>
+        <div class="items-list">
+            <div class="item-card">
+                <div class="item-info">
+                    <h4>Малий мішок кристалів</h4>
+                    <p>+50 💎 на баланс</p>
+                </div>
+                <button class="item-btn gem-btn" onclick="buyGemsInvoice(50, 25)">25 ⭐</button>
+            </div>
+            <div class="item-card">
+                <div class="item-info">
+                    <h4>Середній мішок кристалів</h4>
+                    <p>+150 💎 на баланс</p>
+                </div>
+                <button class="item-btn gem-btn" onclick="buyGemsInvoice(150, 65)">65 ⭐</button>
+            </div>
+            <div class="item-card">
+                <div class="item-info">
+                    <h4>Величезний скарб</h4>
+                    <p>+500 💎 на баланс</p>
+                </div>
+                <button class="item-btn gem-btn" onclick="buyGemsInvoice(500, 200)">200 ⭐</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-content" id="tab-tasks">
+        <div class="section-title">Щоденні завдання</div>
+        <div class="items-list">
+            <div class="item-card">
+                <div class="item-info">
+                    <h4>Підписатися на Telegram</h4>
+                    <p>Нагорода: +5000 монет, +5 💎</p>
+                </div>
+                <button class="item-btn" id="subBtn" onclick="startTelegramTask()">Виконати</button>
+            </div>
+            <div class="item-card">
+                <div class="item-info">
+                    <h4>Друг натапав 10к монет</h4>
+                    <p id="refProgress">Прогрес: 0 / 10 000</p>
+                </div>
+                <button class="item-btn" id="refBtn" onclick="checkReferralProgress()">Перевірити</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-content" id="tab-friends">
+        <div class="section-title">Реферальна система</div>
+        <div class="items-list">
+            <div class="item-card">
+                <div class="item-info">
+                    <h4>Запросити друга</h4>
+                    <p>Отримайте по 2500 монет і 2 💎</p>
+                </div>
+                <button class="item-btn" onclick="inviteFriend()">Поділитися</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-content" id="tab-roulette">
+        <div class="section-title">Колесо Фортуни</div>
+        
+        <div class="roulette-switcher">
+            <button class="roulette-switch-btn active" onclick="switchRoulette('coin', this)">🪙 Монетна</button>
+            <button class="roulette-switch-btn" onclick="switchRoulette('gem', this)">💎 Кришталева</button>
+        </div>
+
+        <div class="roulette-container active" id="roulette-coin">
+            <p style="font-size: 11px; color: var(--text-secondary);">Ціна прокрутки: 7 000 🪙</p>
+            <div class="wheel-wrapper">
+                <div class="wheel-pointer"></div>
+                <div class="wheel" id="wheelCoin"></div>
+            </div>
+            <button class="item-btn" id="spinCoinBtn" onclick="spinCoinWheel()" style="width: 100%; padding: 8px; font-size: 13px;">Крутити (7 000 🪙)</button>
+        </div>
+
+        <div class="roulette-container" id="roulette-gem">
+            <p style="font-size: 11px; color: var(--text-secondary);">Ціна прокрутки: 15 💎</p>
+            <div class="wheel-wrapper">
+                <div class="wheel-pointer"></div>
+                <div class="wheel" id="wheelGem" style="border-color: var(--accent-gem);"></div>
+            </div>
+            <button class="item-btn" id="spinGemBtn" onclick="spinGemWheel()" style="width: 100%; padding: 8px; font-size: 13px; background: var(--accent-gem); color: #0369a1;">Крутити (15 💎)</button>
+        </div>
+    </div>
+
+    <div class="tab-content" id="tab-exchange">
+        <div class="section-title">Обмін валют</div>
+        <div class="items-list">
+            <div class="item-card">
+                <div class="item-info">
+                    <h4>Монети на Кристали</h4>
+                    <p>500 000 🪙 ➔ 20 💎</p>
+                </div>
+                <button class="item-btn" onclick="exchangeCoinsToGems()">Обміняти</button>
+            </div>
+            <div class="item-card">
+                <div class="item-info">
+                    <h4>Кристали на Монети</h4>
+                    <p>10 💎 ➔ 50 000 🪙</p>
+                </div>
+                <button class="item-btn gem-btn" onclick="exchangeGemsToCoins()">Обміняти</button>
+            </div>
+        </div>
+    </div>
+
+    <nav>
+        <button class="nav-item active" onclick="switchTab('tap', this)">
             <span class="nav-icon">⚡</span>
-            <span>Прокачка</span>
+            <span>Тап</span>
         </button>
-        <button class="nav-item" onclick="switchTab('admin', this)">
-            <span class="nav-icon">⚙️</span>
-            <span>Тест (Скидання)</span>
+        <button class="nav-item" onclick="switchTab('boosts', this)">
+            <span class="nav-icon">🚀</span>
+            <span>Бусти</span>
         </button>
-    </div>
-</div>
+        <button class="nav-item" onclick="switchTab('shop', this)">
+            <span class="nav-icon">⭐</span>
+            <span>Магазин</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('tasks', this)">
+            <span class="nav-icon">📋</span>
+            <span>Завдання</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('friends', this)">
+            <span class="nav-icon">👥</span>
+            <span>Друзі</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('roulette', this)">
+            <span class="nav-icon">🎡</span>
+            <span>Рулетка</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('exchange', this)">
+            <span class="nav-icon">🔄</span>
+            <span>Обмін</span>
+        </button>
+    </nav>
 
-<script>
-    // Ігрові змінні
-    let game = {
-        score: parseInt(localStorage.getItem('tabcoin_score')) || 0,
-        gems: parseInt(localStorage.getItem('tabcoin_gems')) || 0,
-        energy: parseInt(localStorage.getItem('tabcoin_energy')) || 1000,
-        maxEnergy: parseInt(localStorage.getItem('tabcoin_maxEnergy')) || 1000,
-        clickPower: parseInt(localStorage.getItem('tabcoin_clickPower')) || 1,
-        level: parseInt(localStorage.getItem('tabcoin_level')) || 1
-    };
+    <script>
+        // Ініціалізація Telegram WebApp
+        const tg = window.Telegram.WebApp;
+        tg.expand();
 
-    // Оновлення інтерфейсу на екрані
-    function updateUI() {
-        document.getElementById('ui-score').innerText = game.score;
-        document.getElementById('ui-gems').innerText = game.gems;
-        document.getElementById('ui-level').innerText = game.level;
-        document.getElementById('ui-energy').innerText = game.energy;
-        document.getElementById('ui-max-energy').innerText = game.maxEnergy;
+        let score = Number(localStorage.getItem('tabcoin_score')) || 0;
+        let gems = Number(localStorage.getItem('tabcoin_gems')) || 0;
+        let maxEnergy = Number(localStorage.getItem('tabcoin_maxEnergy')) || 1000;
+        let energy = Number(localStorage.getItem('tabcoin_energy'));
+        if (isNaN(energy)) energy = maxEnergy;
         
-        let energyPercent = (game.energy / game.maxEnergy) * 100;
-        document.getElementById('ui-energy-bar').style.width = energyPercent + '%';
-    }
-
-    // Збереження в пам'ять телефона
-    function saveGame() {
-        localStorage.setItem('tabcoin_score', game.score);
-        localStorage.setItem('tabcoin_gems', game.gems);
-        localStorage.setItem('tabcoin_energy', game.energy);
-        localStorage.setItem('tabcoin_maxEnergy', game.maxEnergy);
-        localStorage.setItem('tabcoin_clickPower', game.clickPower);
-        localStorage.setItem('tabcoin_level', game.level);
-    }
-
-    // Клік по монеті
-    function handleClick(event) {
-        if (game.energy >= game.clickPower) {
-            game.score += game.clickPower;
-            game.energy -= game.clickPower;
-            saveGame();
-            updateUI();
-        }
-    }
-
-    // Відновлення енергії з часом
-    setInterval(() => {
-        if (game.energy < game.maxEnergy) {
-            game.energy = Math.min(game.maxEnergy, game.energy + 3);
-            saveGame();
-            updateUI();
-        }
-    }, 1000);
-
-    // Перемикання вкладок
-    function switchTab(tabId, element) {
-        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+        let clickPower = Number(localStorage.getItem('tabcoin_clickPower')) || 1;
+        let level = Number(localStorage.getItem('tabcoin_level')) || 1;
         
-        document.getElementById('tab-' + tabId).classList.add('active');
-        element.classList.add('active');
-    }
+        let multiclickLevel = Number(localStorage.getItem('tabcoin_multiLevel')) || 0;
+        let maxenergyLevel = Number(localStorage.getItem('tabcoin_energyLevel')) || 0;
+        let regenLevel = Number(localStorage.getItem('tabcoin_regenLevel')) || 0;
 
-    // Покупка апгрейду (приклад)
-    function buyUpgrade(type) {
-        if (type === 'click' && game.score >= 50) {
-            game.score -= 50;
-            game.clickPower += 1;
+        const regenValues = [3, 5, 10, 30, 50]; 
+        const regenPrices = [10000, 50000, 70000, 100000];
+        const boostPrices = [500, 700, 1000, 2000, 3000, 5000, 7500, 10000];
+
+        let taskStarted = localStorage.getItem('tabcoin_taskStarted') === 'true';
+        let telegramTaskDone = localStorage.getItem('tabcoin_tgDone') === 'true';
+        let refTaskDone = localStorage.getItem('tabcoin_refDone') === 'true';
+
+        const energyCostPerClick = 5;
+
+        let lastTime = Number(localStorage.getItem('tabcoin_lastTime')) || Date.now();
+        let currentTime = Date.now();
+        let elapsedSeconds = Math.floor((currentTime - lastTime) / 1000);
+
+        if (elapsedSeconds > 0 && energy < maxEnergy) {
+            let currentRegenRate = regenValues[Math.min(regenLevel, regenValues.length - 1)];
+            let restoredEnergy = elapsedSeconds * currentRegenRate;
+            energy = Math.min(maxEnergy, energy + restoredEnergy);
+        }
+
+        const scoreElement = document.getElementById('score');
+        const gemsElement = document.getElementById('gems');
+        const energyText = document.getElementById('energyText');
+        const energyFill = document.getElementById('energyFill');
+        const clickArea = document.getElementById('clickArea');
+        const levelBadge = document.getElementById('levelBadge');
+        const characterImg = document.getElementById('characterImg');
+        const buyMulticlickBtn = document.getElementById('buyMulticlickBtn');
+        const buyMaxenergyBtn = document.getElementById('buyMaxenergyBtn');
+        const buyRegenBtn = document.getElementById('buyRegenBtn');
+        const regenInfo = document.getElementById('regenInfo');
+
+        function getBoostPrice(boostLevel) {
+            if (boostLevel < boostPrices.length) {
+                return boostPrices[boostLevel];
+            }
+            return boostPrices[boostPrices.length - 1] + (boostLevel - boostPrices.length + 1) * 5000;
+        }
+
+        function saveGame() {
+            localStorage.setItem('tabcoin_score', score);
+            localStorage.setItem('tabcoin_gems', gems);
+            localStorage.setItem('tabcoin_energy', energy);
+            localStorage.setItem('tabcoin_maxEnergy', maxEnergy);
+            localStorage.setItem('tabcoin_clickPower', clickPower);
+            localStorage.setItem('tabcoin_level', level);
+            localStorage.setItem('tabcoin_multiLevel', multiclickLevel);
+            localStorage.setItem('tabcoin_energyLevel', maxenergyLevel);
+            localStorage.setItem('tabcoin_regenLevel', regenLevel);
+            localStorage.setItem('tabcoin_taskStarted', taskStarted);
+            localStorage.setItem('tabcoin_tgDone', telegramTaskDone);
+            localStorage.setItem('tabcoin_refDone', refTaskDone);
+            localStorage.setItem('tabcoin_lastTime', Date.now());
+        }
+
+        function checkLevelProgression() {
+            if (score >= 500000 && level < 5) {
+                level = 5;
+                alert('👑 НЕЙМОВІРНО! Ви досягли 500 000 монет і здобули 5-й абсолютний рівень!');
+            } else if (score >= 340000 && score < 500000 && level < 4) {
+                level = 4;
+                alert('🚀 Легендарно! Ви досягли 340 000 монет та перейшли на 4-й рівень!');
+            } else if (score >= 170000 && score < 340000 && level < 3) {
+                level = 3;
+                alert('🏆 Неймовірно! Ви досягли 170 000 монет та перейшли на 3-й рівень!');
+            } else if (score >= 70000 && score < 170000 && level < 2) {
+                level = 2;
+                alert('🎉 Вітаємо! Ви досягли 70 000 монет та перейшли на 2-й рівень!');
+            }
+            updateVisuals();
+        }
+
+        function updateVisuals() {
+            scoreElement.textContent = score;
+            gemsElement.textContent = gems;
+            energyText.textContent = `${Math.floor(energy)} / ${maxEnergy}`;
+            energyFill.style.width = `${(energy / maxEnergy) * 100}%`;
+            
+            buyMulticlickBtn.textContent = `Купити (${getBoostPrice(multiclickLevel)} 🪙)`;
+            buyMaxenergyBtn.textContent = `Купити (${getBoostPrice(maxenergyLevel)} 🪙)`;
+
+            let currentRegen = regenValues[Math.min(regenLevel, regenValues.length - 1)];
+            if (regenLevel < regenPrices.length) {
+                regenInfo.textContent = `Відновлення: ${currentRegen}/сек (Наступний: ${regenValues[regenLevel+1]}/сек)`;
+                buyRegenBtn.textContent = `Купити (${regenPrices[regenLevel]} 🪙)`;
+                buyRegenBtn.disabled = false;
+            } else {
+                regenInfo.textContent = `Відновлення: ${currentRegen}/сек (Максимум)`;
+                buyRegenBtn.textContent = 'Максимум';
+                buyRegenBtn.disabled = true;
+            }
+
+            // Зміна лише персонажа залежно від рівня (фон завжди однаковий)
+            if (level >= 5) {
+                levelBadge.textContent = 'Рівень 5 👑';
+                characterImg.src = '1790244183576.png';
+            } else if (level === 4) {
+                levelBadge.textContent = 'Рівень 4 ⚡';
+                characterImg.src = '1790165750453.png';
+            } else if (level === 3) {
+                levelBadge.textContent = 'Рівень 3 🌟';
+                characterImg.src = '1790163627383.png';
+            } else if (level === 2) {
+                levelBadge.textContent = 'Рівень 2 👑';
+                characterImg.src = '1790159498394.png';
+            } else {
+                levelBadge.textContent = 'Рівень 1';
+                characterImg.src = '1790090929041.png';
+            }
+        }
+
+        function exchangeCoinsToGems() {
+            const cost = 500000;
+            const reward = 20;
+
+            if (score >= cost) {
+                score -= cost;
+                gems += reward;
+                updateVisuals();
+                saveGame();
+                alert(`Успішний обмін! Отримано +${reward} 💎`);
+            } else {
+                alert('Недостатньо монет! Потрібно 500 000 🪙');
+            }
+        }
+
+        function exchangeGemsToCoins() {
+            const cost = 10;
+            const reward = 50000;
+
+            if (gems >= cost) {
+                gems -= cost;
+                score += reward;
+                updateVisuals();
+                saveGame();
+                alert(`Успішний обмін! Отримано +${reward} 🪙`);
+            } else {
+                alert('Недостатньо кристалів! Потрібно 10 💎');
+            }
+        }
+
+        // Перенаправлення користувача до бота для виклику інвойсу зірок
+        function buyGemsInvoice(gemAmount, starsPrice) {
+            const botUsername = "tabcoin1_bot"; 
+            const payload = `buy_${gemAmount}_gems_${starsPrice}_stars`;
+            const invoiceUrl = `https://t.me/${botUsername}?start=${payload}`;
+
+            if (tg.openTelegramLink) {
+                tg.openTelegramLink(invoiceUrl);
+            } else {
+                window.open(invoiceUrl, '_blank');
+            }
+        }
+
+        updateVisuals();
+
+        if (telegramTaskDone) {
+            const subBtn = document.getElementById('subBtn');
+            subBtn.textContent = 'Виконано';
+            subBtn.disabled = true;
+        } else if (taskStarted) {
+            const subBtn = document.getElementById('subBtn');
+            subBtn.textContent = 'Перевірити';
+            subBtn.setAttribute('onclick', 'checkTelegramTask()');
+        }
+
+        if (refTaskDone) {
+            const refBtn = document.getElementById('refBtn');
+            refBtn.textContent = 'Отримано';
+            refBtn.disabled = true;
+            document.getElementById('refProgress').textContent = 'Виконано: 10 000 / 10 000';
+        }
+
+        clickArea.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            for (let i = 0; i < e.changedTouches.length; i++) {
+                if (energy >= energyCostPerClick) {
+                    score += clickPower;
+                    energy -= energyCostPerClick;
+                    let touch = e.changedTouches[i];
+                    showFloatingTextAt(touch.clientX, touch.clientY);
+                }
+            }
+            checkLevelProgression();
             saveGame();
-            updateUI();
-            alert('Успішно куплено!');
-        } else {
-            alert('Недостатньо монет!');
+        }, { passive: false });
+
+        clickArea.addEventListener('click', (e) => {
+            if (energy >= energyCostPerClick) {
+                score += clickPower;
+                energy -= energyCostPerClick;
+                showFloatingTextAt(e.clientX, e.clientY);
+            }
+            checkLevelProgression();
+            saveGame();
+        });
+
+        setInterval(() => {
+            if (energy < maxEnergy) {
+                let currentRegenRate = regenValues[Math.min(regenLevel, regenValues.length - 1)];
+                energy = Math.min(maxEnergy, energy + currentRegenRate);
+                updateVisuals();
+                saveGame();
+            }
+        }, 1000);
+
+        window.addEventListener('beforeunload', () => {
+            saveGame();
+        });
+
+        function showFloatingTextAt(clientX, clientY) {
+            const rect = clickArea.getBoundingClientRect();
+            const popup = document.createElement('div');
+            popup.className = 'click-pop';
+            popup.textContent = `+${clickPower}`;
+            popup.style.left = `${clientX - rect.left}px`;
+            popup.style.top = `${clientY - rect.top}px`;
+            clickArea.appendChild(popup);
+            setTimeout(() => popup.remove(), 800);
         }
-    }
 
-    /* ==========================================
-       ФУНКЦІЇ ТЕСТОВОГО СКИНУ ТА ПОВТОРНОГО ПОВЕРНЕННЯ
-       ========================================== */
-
-    // 1. Повне обнулення
-    function testResetToZero() {
-        if (confirm("Точно скинути все до нуля?")) {
-            localStorage.setItem('tabcoin_score', '0');
-            localStorage.setItem('tabcoin_gems', '0');
-            localStorage.setItem('tabcoin_energy', '1000');
-            localStorage.setItem('tabcoin_maxEnergy', '1000');
-            localStorage.setItem('tabcoin_clickPower', '1');
-            localStorage.setItem('tabcoin_level', '1');
-            location.reload();
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            element.classList.add('active');
         }
-    }
 
-    // 2. Відновлення попередніх даних через віконця на телефоні
-    function testRestoreProgress() {
-        let savedScore = prompt("Введіть скільки у вас було монет:", "500000");
-        let savedGems = prompt("Введіть скільки у вас було кристалів:", "100");
-        let savedLevel = prompt("Введіть який у вас був рівень:", "5");
-
-        if (savedScore !== null && savedGems !== null && savedLevel !== null) {
-            localStorage.setItem('tabcoin_score', savedScore);
-            localStorage.setItem('tabcoin_gems', savedGems);
-            localStorage.setItem('tabcoin_level', savedLevel);
-            location.reload();
+        function switchRoulette(type, element) {
+            document.querySelectorAll('.roulette-container').forEach(cont => cont.classList.remove('active'));
+            document.querySelectorAll('.roulette-switch-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`roulette-${type}`).classList.add('active');
+            element.classList.add('active');
         }
-    }
 
-    // Запуск при завантаженні
-    updateUI();
-</script>
+        function buyBoost(type) {
+            if (type === 'multiclick') {
+                let cost = getBoostPrice(multiclickLevel);
+                if (score >= cost) {
+                    score -= cost;
+                    multiclickLevel++;
+                    clickPower += 1;
+                    alert('Буст кліка успішно куплено!');
+                    checkLevelProgression();
+                    saveGame();
+                } else {
+                    alert('Недостатньо монет!');
+                }
+            } else if (type === 'maxenergy') {
+                let cost = getBoostPrice(maxenergyLevel);
+                if (score >= cost) {
+                    score -= cost;
+                    maxenergyLevel++;
+                    maxEnergy += 500;
+                    energy = maxEnergy;
+                    alert('Максимум енергії збільшено!');
+                    checkLevelProgression();
+                    saveGame();
+                } else {
+                    alert('Недостатньо монет!');
+                }
+            } else if (type === 'regen') {
+                if (regenLevel < regenPrices.length) {
+                    let cost = regenPrices[regenLevel];
+                    if (score >= cost) {
+                        score -= cost;
+                        regenLevel++;
+                        alert('Швидкість відновлення енергії успішно підвищено!');
+                        checkLevelProgression();
+                        saveGame();
+                    } else {
+                        alert('Недостатньо монет!');
+                    }
+                }
+            }
+        }
 
+        function startTelegramTask() {
+            window.open('https://t.me/tabcoin_bot1', '_blank');
+            const btn = document.getElementById('subBtn');
+            btn.textContent = 'Перевірити';
+            taskStarted = true;
+            btn.setAttribute('onclick', 'checkTelegramTask()');
+            saveGame();
+        }
+
+        function checkTelegramTask() {
+            if (taskStarted) {
+                score += 5000;
+                gems += 5;
+                telegramTaskDone = true;
+                const btn = document.getElementById('subBtn');
+                btn.textContent = 'Виконано';
+                btn.disabled = true;
+                checkLevelProgression();
+                saveGame();
+                alert('Завдання виконано! Отримано +5000 монет та +5 💎.');
+            }
+        }
+
+        function checkReferralProgress() {
+            let friendReachedGoal = true; 
+            if (friendReachedGoal) {
+                score += 10000;
+                gems += 10;
+                refTaskDone = true;
+                const btn = document.getElementById('refBtn');
+                btn.textContent = 'Отримано';
+                btn.disabled = true;
+                document.getElementById('refProgress').textContent = 'Виконано: 10 000 / 10 000';
+                checkLevelProgression();
+                saveGame();
+                alert('Вітаю! Нагороду за друга отримано!');
+            } else {
+                alert('Друг ще не натапав 10 000 монет.');
+            }
+        }
+
+        function inviteFriend() {
+            window.open('https://t.me/share/url?url=https://t.me/tabcoin1_bot&text=Заходь у круту тапалку!', '_blank');
+        }
+
+        const coinRoulettePrizes = [
+            { text: "30k 🪙", gems: 0, coins: 30000, chance: 0.10 },
+            { text: "25k 🪙", gems: 0, coins: 25000, chance: 0.15 },
+            { text: "20k 🪙", gems: 0, coins: 20000, chance: 0.30 },
+            { text: "15k 🪙", gems: 0, coins: 15000, chance: 0.50 },
+            { text: "10k 🪙", gems: 0, coins: 10000, chance: 0.60 },
+            { text: "7k 🪙",  gems: 0, coins: 7000,  chance: 0.60 }
+        ];
+
+        const gemRoulettePrizes = [
+            { text: "30💎", gems: 30, coins: 0, chance: 0.10 },
+            { text: "25💎", gems: 25, coins: 0, chance: 0.15 },
+            { text: "20💎", gems: 20, coins: 0, chance: 0.30 },
+            { text: "15💎", gems: 15, coins: 0, chance: 0.50 },
+            { text: "10💎", gems: 10, coins: 0, chance: 0.60 },
+            { text: "5💎",  gems: 5,  coins: 0, chance: 0.60 }
+        ];
+
+        function buildWheelSVG(wheelId, prizes) {
+            const wheelContainer = document.getElementById(wheelId);
+            const total = prizes.length;
+            const angleStep = 360 / total;
+
+            let svgHTML = `<svg viewBox="0 0 100 100" style="width: 100%; height: 100%;">`;
+            
+            prizes.forEach((prize, index) => {
+                const startAngle = index * angleStep;
+                const endAngle = (index + 1) * angleStep;
+                const fillColor = index % 2 === 0 ? 'rgba(30, 41, 59, 0.95)' : 'rgba(51, 65, 85, 0.95)';
+                
+                const radStart = Math.PI * (startAngle - 90) / 180;
+                const radEnd = Math.PI * (endAngle - 90) / 180;
+
+                const x1 = 50 + 50 * Math.cos(radStart);
+                const y1 = 50 + 50 * Math.sin(radStart);
+                const x2 = 50 + 50 * Math.cos(radEnd);
+                const y2 = 50 + 50 * Math.sin(radEnd);
+                const largeArcFlag = angleStep > 180 ? 1 : 0;
+
+                const pathData = `M 50 50 L ${x1} ${y1} A 50 50 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
+
+                svgHTML += `<path d="${pathData}" fill="${fillColor}" stroke="rgba(255, 255, 255, 0.15)" stroke-width="0.8"/>`;
+
+                const midAngle = startAngle + angleStep / 2;
+                const radMid = Math.PI * (midAngle - 90) / 180;
+                const textRadius = 32;
+                const textX = 50 + textRadius * Math.cos(radMid);
+                const textY = 50 + textRadius * Math.sin(radMid);
+
+                let textAngle = midAngle;
+                if (textAngle > 90 && textAngle < 270) {
+                    textAngle += 180;
+                }
+
+                svgHTML += `<text x="${textX}" y="${textY}" fill="#ffffff" font-size="6" font-weight="900" text-anchor="middle" dominant-baseline="middle" transform="rotate(${textAngle}, ${textX}, ${textY})" stroke="#000" stroke-width="0.3">${prize.text}</text>`;
+            });
+
+            svgHTML += `</svg>`;
+            const centerIcon = wheelId === 'wheelCoin' ? '🪙' : '💎';
+            wheelContainer.innerHTML = `<div class="wheel-center">${centerIcon}</div>` + svgHTML;
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            buildWheelSVG('wheelCoin', coinRoulettePrizes);
+            buildWheelSVG('wheelGem', gemRoulettePrizes);
+        });
+
+        function getWeightedRandomIndex(prizes) {
+            const totalWeight = prizes.reduce((sum, item) => sum + item.chance, 0);
+            let randomNum = Math.random() * totalWeight;
+            
+            for (let i = 0; i < prizes.length; i++) {
+                if (randomNum < prizes[i].chance) return i;
+                randomNum -= prizes[i].chance;
+            }
+            return 0;
+        }
+
+        let coinRotation = 0;
+        function spinCoinWheel() {
+            const cost = 7000;
+            if (score < cost) {
+                alert('Недостатньо монет! Потрібно 7 000 🪙');
+                return;
+            }
+
+            score -= cost;
+            checkLevelProgression();
+            saveGame();
+
+            const spinBtn = document.getElementById('spinCoinBtn');
+            spinBtn.disabled = true;
+
+            const prizeIndex = getWeightedRandomIndex(coinRoulettePrizes);
+            const totalItems = coinRoulettePrizes.length;
+            const angleStep = 360 / totalItems;
+            
+            const targetSectorCenter = prizeIndex * angleStep + angleStep / 2;
+            const extraSpins = 360 * 7;
+            const currentMod = coinRotation % 360;
+            const targetRotation = coinRotation + extraSpins + (360 - currentMod) + (360 - targetSectorCenter);
+            
+            coinRotation = targetRotation;
+            document.getElementById('wheelCoin').style.transform = `rotate(${coinRotation}deg)`;
+
+            setTimeout(() => {
+                const wonCoins = coinRoulettePrizes[prizeIndex].coins;
+                const wonGems = coinRoulettePrizes[prizeIndex].gems;
+                score += wonCoins;
+                gems += wonGems;
+                alert(`Вітаємо! Ви виграли ${wonCoins} 🪙!`);
+                checkLevelProgression();
+                updateVisuals();
+                saveGame();
+                spinBtn.disabled = false;
+            }, 4000);
+        }
+
+        let gemRotation = 0;
+        function spinGemWheel() {
+            const cost = 15;
+            if (gems < cost) {
+                alert('Недостатня кількість кристалів! Потрібно 15 💎');
+                return;
+            }
+
+            gems -= cost;
+            updateVisuals();
+            saveGame();
+
+            const spinBtn = document.getElementById('spinGemBtn');
+            spinBtn.disabled = true;
+
+            const prizeIndex = getWeightedRandomIndex(gemRoulettePrizes);
+            const totalItems = gemRoulettePrizes.length;
+            const angleStep = 360 / totalItems;
+            
+            const targetSectorCenter = prizeIndex * angleStep + angleStep / 2;
+            const extraSpins = 360 * 7;
+            const currentMod = gemRotation % 360;
+            const targetRotation = gemRotation + extraSpins + (360 - currentMod) + (360 - targetSectorCenter);
+            
+            gemRotation = targetRotation;
+            document.getElementById('wheelGem').style.transform = `rotate(${gemRotation}deg)`;
+
+            setTimeout(() => {
+                const wonCoins = gemRoulettePrizes[prizeIndex].coins;
+                const wonGems = gemRoulettePrizes[prizeIndex].gems;
+                score += wonCoins;
+                gems += wonGems;
+                alert(`Вітаємо! Ви виграли ${wonGems} 💎!`);
+                checkLevelProgression();
+                updateVisuals();
+                saveGame();
+                spinBtn.disabled = false;
+            }, 4000);
+        }
+    </script>
 </body>
 </html>
