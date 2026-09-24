@@ -268,6 +268,11 @@
             white-space: nowrap;
         }
 
+        .item-btn.gem-btn {
+            background: var(--accent-gem);
+            color: #0369a1;
+        }
+
         .item-btn:active {
             opacity: 0.8;
         }
@@ -478,6 +483,34 @@
         </div>
     </div>
 
+    <!-- Вкладка Магазину (Покупка за зірки Telegram Stars) -->
+    <div class="tab-content" id="tab-shop">
+        <div class="section-title">Магазин Зірок ⭐</div>
+        <div class="items-list">
+            <div class="item-card">
+                <div class="item-info">
+                    <h4>Малий мішок кристалів</h4>
+                    <p>+50 💎 на баланс</p>
+                </div>
+                <button class="item-btn gem-btn" onclick="buyGemsInvoice(50, 25)">25 ⭐</button>
+            </div>
+            <div class="item-card">
+                <div class="item-info">
+                    <h4>Середній мішок кристалів</h4>
+                    <p>+150 💎 на баланс</p>
+                </div>
+                <button class="item-btn gem-btn" onclick="buyGemsInvoice(150, 65)">65 ⭐</button>
+            </div>
+            <div class="item-card">
+                <div class="item-info">
+                    <h4>Величезний скарб</h4>
+                    <p>+500 💎 на баланс</p>
+                </div>
+                <button class="item-btn gem-btn" onclick="buyGemsInvoice(500, 200)">200 ⭐</button>
+            </div>
+        </div>
+    </div>
+
     <div class="tab-content" id="tab-tasks">
         <div class="section-title">Щоденні завдання</div>
         <div class="items-list">
@@ -548,6 +581,13 @@
                 </div>
                 <button class="item-btn" onclick="exchangeCoinsToGems()">Обміняти</button>
             </div>
+            <div class="item-card">
+                <div class="item-info">
+                    <h4>Кристали на Монети</h4>
+                    <p>10 💎 ➔ 50 000 🪙</p>
+                </div>
+                <button class="item-btn gem-btn" onclick="exchangeGemsToCoins()">Обміняти</button>
+            </div>
         </div>
     </div>
 
@@ -559,6 +599,10 @@
         <button class="nav-item" onclick="switchTab('boosts', this)">
             <span class="nav-icon">🚀</span>
             <span>Бусти</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('shop', this)">
+            <span class="nav-icon">⭐</span>
+            <span>Магазин</span>
         </button>
         <button class="nav-item" onclick="switchTab('tasks', this)">
             <span class="nav-icon">📋</span>
@@ -574,11 +618,15 @@
         </button>
         <button class="nav-item" onclick="switchTab('exchange', this)">
             <span class="nav-icon">🔄</span>
-            <span>Обміни</span>
+            <span>Обмін</span>
         </button>
     </nav>
 
     <script>
+        // Ініціалізація Telegram WebApp
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
         let score = Number(localStorage.getItem('tabcoin_score')) || 0;
         let gems = Number(localStorage.getItem('tabcoin_gems')) || 0;
         let maxEnergy = Number(localStorage.getItem('tabcoin_maxEnergy')) || 1000;
@@ -715,6 +763,57 @@
             } else {
                 alert('Недостатньо монет! Потрібно 500 000 🪙');
             }
+        }
+
+        function exchangeGemsToCoins() {
+            const cost = 10;
+            const reward = 50000;
+
+            if (gems >= cost) {
+                gems -= cost;
+                score += reward;
+                updateVisuals();
+                saveGame();
+                alert(`Успішний обмін! Отримано +${reward} 🪙`);
+            } else {
+                alert('Недостатньо кристалів! Потрібно 10 💎');
+            }
+        }
+
+        // Функція виклику інвойсу Telegram Stars через Бекенд / WebApp
+        function buyGemsInvoice(gemAmount, starsPrice) {
+            // У реальному додатку тут надсилається запит на твій сервер (бекend), 
+            // який створює інвойс через бот (@tabcoin1_bot) за допомогою команди sendInvoice (з валютою XTR).
+            // Нижче приклад взаємодії з Telegram WebApp для відкриття посилання рахунку:
+            
+            fetch(`https://твій-бекend-сервер.com/create-invoice?amount=${gemAmount}&stars=${starsPrice}&user=${tg.initDataUnsafe?.user?.id || 0}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.invoiceUrl) {
+                        tg.openInvoice(data.invoiceUrl, (status) => {
+                            if (status === 'paid') {
+                                gems += gemAmount;
+                                updateVisuals();
+                                saveGame();
+                                alert(`Оплата успішна! Вам зараховано +${gemAmount} 💎`);
+                            } else {
+                                alert('Оплату було скасовано або сталася помилка.');
+                            }
+                        });
+                    } else {
+                        // Демо-режим для перевірки без підключеного сервера:
+                        alert(`[Демо] Запит на покупку ${gemAmount} 💎 за ${starsPrice} ⭐ відправлено до бота!`);
+                    }
+                })
+                .catch(err => {
+                    // Якщо бекенд ще не піднято локально, імітуємо успішну покупку для тесту:
+                    if (confirm(`Підтвердити тестову покупку ${gemAmount} 💎 за ${starsPrice} ⭐?`)) {
+                        gems += gemAmount;
+                        updateVisuals();
+                        saveGame();
+                        alert(`Успішно додано +${gemAmount} 💎 до балансу!`);
+                    }
+                });
         }
 
         updateVisuals();
