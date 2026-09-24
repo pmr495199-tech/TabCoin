@@ -95,7 +95,6 @@
             backdrop-filter: blur(10px);
         }
 
-        /* Клікабельні кристали */
         .gem-container-clickable {
             cursor: pointer;
             transition: transform 0.1s ease;
@@ -285,6 +284,27 @@
             cursor: not-allowed;
         }
 
+        /* Поле введення промокоду */
+        .promo-box {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+            margin-top: 5px;
+        }
+        .promo-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            border-radius: 10px;
+            color: var(--text-white);
+            font-size: 13px;
+            outline: none;
+        }
+        .promo-input::placeholder {
+            color: var(--text-secondary);
+        }
+
         .roulette-switcher {
             display: flex;
             gap: 8px;
@@ -378,7 +398,7 @@
             z-index: 5;
         }
 
-        /* Модальне вікно магазину кристалів */
+        /* Модальне вікно магазину кристалів з вибором зірок */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -417,7 +437,49 @@
             border-radius: 12px;
             font-weight: 700;
             cursor: pointer;
-            margin-top: 5px;
+        }
+
+        .stars-selector-box {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+        }
+        .stars-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        .star-control-btn {
+            background: var(--accent-gem);
+            color: #0369a1;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.1s;
+        }
+        .star-control-btn:active {
+            transform: scale(0.9);
+        }
+        .stars-display {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--accent-gold);
+        }
+        .gems-output {
+            font-size: 14px;
+            color: var(--text-secondary);
         }
 
         nav {
@@ -530,6 +592,15 @@
     <div class="tab-content" id="tab-tasks">
         <div class="section-title">Щоденні завдання</div>
         <div class="items-list">
+            <!-- Щоденний бонус -->
+            <div class="item-card">
+                <div class="item-info">
+                    <h4>🎁 Щоденний бонус</h4>
+                    <p id="dailyInfo">Забирай нагороду щодня!</p>
+                </div>
+                <button class="item-btn" id="dailyBtn" onclick="claimDailyReward()">Забрати</button>
+            </div>
+            
             <div class="item-card">
                 <div class="item-info">
                     <h4>Підписатися на Telegram</h4>
@@ -543,6 +614,18 @@
                     <p id="refProgress">Прогрес: 0 / 10 000</p>
                 </div>
                 <button class="item-btn" id="refBtn" onclick="checkReferralProgress()">Перевірити</button>
+            </div>
+
+            <!-- Блок введення промокоду -->
+            <div class="item-card" style="flex-direction: column; align-items: stretch; gap: 8px;">
+                <div class="item-info">
+                    <h4>🎟️ Промокод</h4>
+                    <p>Введи секретний код для бонусу</p>
+                </div>
+                <div class="promo-box">
+                    <input type="text" id="promoInput" class="promo-input" placeholder="Введіть код...">
+                    <button class="item-btn" onclick="activatePromoCode()">Активувати</button>
+                </div>
             </div>
         </div>
     </div>
@@ -600,27 +683,22 @@
         </div>
     </div>
 
-    <!-- Модальне вікно магазину кристалів (з цінами у Telegram Stars ⭐) -->
+    <!-- Модальне вікно магазину кристалів з вибором зірок -->
     <div class="modal-overlay" id="gemShopModal">
         <div class="modal-content">
             <div class="section-title" style="margin: 0 auto;">Магазин Кристалів</div>
-            <p style="font-size: 13px; color: var(--text-secondary);">Придбайте кристали за Telegram Stars (⭐) для швидкого прогресу!</p>
-            <div class="items-list" style="max-height: none;">
-                <div class="item-card">
-                    <div class="item-info" style="text-align: left;">
-                        <h4>Заквітлий пакет</h4>
-                        <p>+10 💎</p>
-                    </div>
-                    <button class="item-btn" onclick="buyGemsWithStars(10, 50)">50 ⭐</button>
+            <p style="font-size: 13px; color: var(--text-secondary);">Виберіть кількість зірок для покупки кристалів:</p>
+            
+            <div class="stars-selector-box">
+                <div class="stars-controls">
+                    <button class="star-control-btn" onclick="changeSelectedStars(-10)">-</button>
+                    <div class="stars-display" id="selectedStarsText">50 ⭐</div>
+                    <button class="star-control-btn" onclick="changeSelectedStars(10)">+</button>
                 </div>
-                <div class="item-card">
-                    <div class="item-info" style="text-align: left;">
-                        <h4>Скарбниця болота</h4>
-                        <p>+30 💎</p>
-                    </div>
-                    <button class="item-btn" onclick="buyGemsWithStars(30, 120)">120 ⭐</button>
-                </div>
+                <div class="gems-output" id="calculatedGemsText">Ви отримаєте: +10 💎</div>
             </div>
+
+            <button class="item-btn" onclick="buySelectedGems()" style="width: 100%; padding: 12px; font-size: 15px;">Купити за зірки</button>
             <button class="modal-close-btn" onclick="closeGemShop()">Закрити</button>
         </div>
     </div>
@@ -666,6 +744,8 @@
         let maxenergyLevel = Number(localStorage.getItem('tabcoin_energyLevel')) || 0;
         let regenLevel = Number(localStorage.getItem('tabcoin_regenLevel')) || 0;
 
+        let selectedStars = 50; 
+
         const regenValues = [3, 5, 10, 30, 50]; 
         const regenPrices = [10000, 50000, 70000, 100000];
         const boostPrices = [500, 700, 1000, 2000, 3000, 5000, 7500, 10000];
@@ -673,6 +753,10 @@
         let taskStarted = localStorage.getItem('tabcoin_taskStarted') === 'true';
         let telegramTaskDone = localStorage.getItem('tabcoin_tgDone') === 'true';
         let refTaskDone = localStorage.getItem('tabcoin_refDone') === 'true';
+
+        // Змінні для щоденного бонусу
+        let lastDailyClaim = Number(localStorage.getItem('tabcoin_lastDaily')) || 0;
+        let dailyStreak = Number(localStorage.getItem('tabcoin_dailyStreak')) || 0;
 
         const energyCostPerClick = 5;
 
@@ -718,6 +802,8 @@
             localStorage.setItem('tabcoin_taskStarted', taskStarted);
             localStorage.setItem('tabcoin_tgDone', telegramTaskDone);
             localStorage.setItem('tabcoin_refDone', refTaskDone);
+            localStorage.setItem('tabcoin_lastDaily', lastDailyClaim);
+            localStorage.setItem('tabcoin_dailyStreak', dailyStreak);
             localStorage.setItem('tabcoin_lastTime', Date.now());
         }
 
@@ -758,6 +844,23 @@
                 buyRegenBtn.disabled = true;
             }
 
+            // Перевірка статусу щоденного бонусу
+            const now = Date.now();
+            const oneDay = 24 * 60 * 60 * 1000;
+            const dailyBtn = document.getElementById('dailyBtn');
+            const dailyInfo = document.getElementById('dailyInfo');
+
+            if (now - lastDailyClaim < oneDay) {
+                const timeLeft = Math.ceil((oneDay - (now - lastDailyClaim)) / (1000 * 60 * 60));
+                dailyBtn.textContent = 'Отримано';
+                dailyBtn.disabled = true;
+                dailyInfo.textContent = `Наступний бонус через ~${timeLeft} год.`;
+            } else {
+                dailyBtn.textContent = 'Забрати';
+                dailyBtn.disabled = false;
+                dailyInfo.textContent = `День серії: ${dailyStreak + 1} (Бонус доступний!)`;
+            }
+
             if (level >= 5) {
                 levelBadge.textContent = 'Рівень 5 👑';
                 characterImg.src = '1790180000000.png';
@@ -776,6 +879,54 @@
             }
         }
 
+        // Логіка щоденного бонусу
+        function claimDailyReward() {
+            const now = Date.now();
+            const oneDay = 24 * 60 * 60 * 1000;
+
+            if (now - lastDailyClaim >= oneDay) {
+                if (now - lastDailyClaim > oneDay * 2) {
+                    dailyStreak = 0; // Скидання серії, якщо пропущено більше 2 днів
+                }
+                dailyStreak++;
+                lastDailyClaim = now;
+
+                const rewardCoins = 1000 * dailyStreak;
+                const rewardGems = 2 * dailyStreak;
+
+                score += rewardCoins;
+                gems += rewardGems;
+
+                alert(`🎉 Щоденний бонус отримано!\n+${rewardCoins} 🪙\n+${rewardGems} 💎`);
+                checkLevelProgression();
+                updateVisuals();
+                saveGame();
+            }
+        }
+
+        // Логіка активації промокодів
+        function activatePromoCode() {
+            const input = document.getElementById('promoInput');
+            const code = input.value.trim().toUpperCase();
+
+            if (code === 'TABCOIN2026') {
+                score += 15000;
+                gems += 10;
+                alert('🎁 Промокод активовано! Отримано +15 000 🪙 та +10 💎');
+                input.value = '';
+            } else if (code === 'START') {
+                score += 5000;
+                alert('🎁 Промокод активовано! Отримано +5 000 🪙');
+                input.value = '';
+            } else {
+                alert('❌ Невірний або вже використаний промокод!');
+                return;
+            }
+            checkLevelProgression();
+            updateVisuals();
+            saveGame();
+        }
+
         function exchangeCoinsToGems() {
             const cost = 500000;
             const reward = 20;
@@ -791,8 +942,9 @@
             }
         }
 
-        // Функції для магазину кристалів у шапці
         function openGemShop() {
+            selectedStars = 50;
+            updateStarsSelector();
             document.getElementById('gemShopModal').classList.add('active');
         }
 
@@ -800,16 +952,24 @@
             document.getElementById('gemShopModal').classList.remove('active');
         }
 
-        function buyGemsWithStars(gemAmount, starsCost) {
-            // Перенаправлення у чат з ботом для оформлення покупки за зірки
-            const botUsername = "tabcoin1_bot";
-            const deepLink = `https://t.me/${botUsername}?start=buy_${gemAmount}`;
-            
-            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openTelegramLink) {
-                window.Telegram.WebApp.openTelegramLink(deepLink);
-            } else {
-                window.open(deepLink, '_blank');
-            }
+        function changeSelectedStars(amount) {
+            selectedStars += amount;
+            if (selectedStars < 10) selectedStars = 10;
+            updateStarsSelector();
+        }
+
+        function updateStarsSelector() {
+            document.getElementById('selectedStarsText').textContent = `${selectedStars} ⭐`;
+            let calculatedGems = Math.floor(selectedStars / 5);
+            document.getElementById('calculatedGemsText').textContent = `Ви отримаєте: +${calculatedGems} 💎`;
+        }
+
+        function buySelectedGems() {
+            let calculatedGems = Math.floor(selectedStars / 5);
+            gems += calculatedGems;
+            updateVisuals();
+            saveGame();
+            alert(`Успішна покупка за ${selectedStars} ⭐! Отримано +${calculatedGems} 💎`);
             closeGemShop();
         }
 
@@ -864,10 +1024,6 @@
                 saveGame();
             }
         }, 1000);
-
-        window.addEventListener('beforeunload', () => {
-            saveGame();
-        });
 
         function showFloatingTextAt(clientX, clientY) {
             const rect = clickArea.getBoundingClientRect();
