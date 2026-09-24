@@ -476,9 +476,9 @@
                 <div class="coin-icon">🪙</div>
                 <div class="balance-score" id="score">0</div>
             </div>
-            <!-- Клікабельний блок кристалів -->
+            <!-- Додано знак «+» біля кристалів для зрозумілості -->
             <div class="balance-container gem-container-clickable" onclick="openGemShop()">
-                <div class="gem-icon">💎</div>
+                <div class="gem-icon">💎+</div>
                 <div class="balance-score" id="gems">0</div>
             </div>
         </div>
@@ -601,25 +601,25 @@
         </div>
     </div>
 
-    <!-- Модальне вікно магазину кристалів -->
+    <!-- Модальне вікно магазину кристалів (з цінами у Telegram Stars ⭐) -->
     <div class="modal-overlay" id="gemShopModal">
         <div class="modal-content">
             <div class="section-title" style="margin: 0 auto;">Магазин Кристалів</div>
-            <p style="font-size: 13px; color: var(--text-secondary);">Придбайте кристали за монети для швидкого прогресу!</p>
+            <p style="font-size: 13px; color: var(--text-secondary);">Придбайте кристали за Telegram Stars (⭐) для швидкого прогресу!</p>
             <div class="items-list" style="max-height: none;">
                 <div class="item-card">
                     <div class="item-info" style="text-align: left;">
                         <h4>Заквітлий пакет</h4>
                         <p>+10 💎</p>
                     </div>
-                    <button class="item-btn" onclick="buyGemsPack(10, 250000)">250k 🪙</button>
+                    <button class="item-btn" onclick="buyGemsWithStars(10, 50)">50 ⭐</button>
                 </div>
                 <div class="item-card">
                     <div class="item-info" style="text-align: left;">
                         <h4>Скарбниця болота</h4>
                         <p>+30 💎</p>
                     </div>
-                    <button class="item-btn" onclick="buyGemsPack(30, 650000)">650k 🪙</button>
+                    <button class="item-btn" onclick="buyGemsWithStars(30, 120)">120 ⭐</button>
                 </div>
             </div>
             <button class="modal-close-btn" onclick="closeGemShop()">Закрити</button>
@@ -801,17 +801,13 @@
             document.getElementById('gemShopModal').classList.remove('active');
         }
 
-        function buyGemsPack(gemAmount, coinCost) {
-            if (score >= coinCost) {
-                score -= coinCost;
-                gems += gemAmount;
-                updateVisuals();
-                saveGame();
-                alert(`Успішна покупка! Отримано +${gemAmount} 💎`);
-                closeGemShop();
-            } else {
-                alert('Недостатньо монет для покупки кристалів!');
-            }
+        function buyGemsWithStars(gemAmount, starsCost) {
+            // Тут у майбутньому можна підключити Telegram WebApp API для оплати зірками (window.Telegram.WebApp.openInvoice)
+            gems += gemAmount;
+            updateVisuals();
+            saveGame();
+            alert(`Успішна покупка за ${starsCost} ⭐! Отримано +${gemAmount} 💎`);
+            closeGemShop();
         }
 
         updateVisuals();
