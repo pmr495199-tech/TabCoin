@@ -483,7 +483,6 @@
         </div>
     </div>
 
-    <!-- Вкладка Магазину (Перехід у бота для оплати зірками) -->
     <div class="tab-content" id="tab-shop">
         <div class="section-title">Магазин Зірок ⭐</div>
         <div class="items-list">
@@ -732,6 +731,7 @@
                 buyRegenBtn.disabled = true;
             }
 
+            // Зміна лише персонажа залежно від рівня (фон завжди однаковий)
             if (level >= 5) {
                 levelBadge.textContent = 'Рівень 5 👑';
                 characterImg.src = '1790244794913.png';
@@ -780,7 +780,7 @@
             }
         }
 
-        // Перенаправлення користувача до бота @tabcoin1_bot для виклику інвойсу зірок
+        // Перенаправлення користувача до бота для виклику інвойсу зірок
         function buyGemsInvoice(gemAmount, starsPrice) {
             const botUsername = "tabcoin1_bot"; 
             const payload = `buy_${gemAmount}_gems_${starsPrice}_stars`;
@@ -1120,4 +1120,4 @@
         }
     </script>
 </body>
-            </html>
+</html>
